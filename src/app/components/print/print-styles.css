@@ -1,0 +1,218 @@
+.print-document {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #1a1a2e;
+  background: #fff;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.print-document__header {
+  border-bottom: 3px solid #e53935;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.print-document__brand {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #e53935;
+  letter-spacing: 0.04em;
+}
+
+.print-document__subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.15rem;
+}
+
+.print-document__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+}
+
+.print-document__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.print-document__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.print-document__stat {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.print-document__stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.print-document__stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-top: 0.15rem;
+}
+
+.print-document table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.print-document th {
+  background: #f4f5f7;
+  color: #374151;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.print-document td {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.print-document tr:nth-child(even) td {
+  background: #fafafa;
+}
+
+.print-document__footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.7rem;
+  color: #9ca3af;
+  display: flex;
+  justify-content: space-between;
+}
+
+.print-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.print-toolbar__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.print-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s;
+}
+
+.print-btn--primary {
+  background: #e53935;
+  color: #fff;
+}
+
+.print-btn--primary:hover {
+  background: #c62828;
+}
+
+.print-btn--outline {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.print-btn--outline:hover {
+  background: #f4f5f7;
+}
+
+.badge-print {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.badge-print--success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-print--muted {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.badge-print--danger {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.badge-print--warning {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+@media print {
+  .print-toolbar {
+    display: none !important;
+  }
+
+  .print-document {
+    padding: 0;
+    max-width: none;
+  }
+
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
+
+  .print-document table {
+    page-break-inside: auto;
+  }
+
+  .print-document tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .print-document thead {
+    display: table-header-group;
+  }
+}

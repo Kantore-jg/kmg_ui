@@ -1,0 +1,13 @@
+<script setup>
+import { cn } from '@/app/components/ui/utils'
+
+const props = defineProps({
+  class: { type: String, default: '' },
+})
+</script>
+
+<template>
+  <div :class="cn('text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed', props.class)">
+    <slot />
+  </div>
+</template>
