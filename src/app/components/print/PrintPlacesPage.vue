@@ -114,7 +114,6 @@ onMounted(() => {
           <tr>
             <th>#</th>
             <th>Étal</th>
-            <th>Marché</th>
             <th>Bloc / Allée</th>
             <th>Filière</th>
             <th>Occupant</th>
@@ -124,14 +123,13 @@ onMounted(() => {
         </thead>
         <tbody>
           <tr v-if="!places.length">
-            <td colspan="8" style="text-align:center;color:#9ca3af;padding:2rem">
+            <td colspan="7" style="text-align:center;color:#9ca3af;padding:2rem">
               Aucun emplacement à afficher.
             </td>
           </tr>
           <tr v-for="(place, idx) in places" :key="place.placeId || place.id">
             <td>{{ idx + 1 }}</td>
             <td><strong>{{ place.id }}</strong></td>
-            <td>{{ findMarket(place.marketId)?.name || '—' }}</td>
             <td>{{ place.blockName }} · {{ place.rowName }}</td>
             <td>{{ place.category || '—' }}</td>
             <td>{{ findMerchant(place.merchantId)?.name || '—' }}</td>

@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue';
 import { CheckCircle, XCircle } from 'lucide-vue-next';
 import Badge from '../ui/Badge.vue';
 import Button from '../ui/Button.vue';
@@ -12,7 +11,7 @@ import {
   TableRow,
 } from '../ui/table';
 
-const props = defineProps({
+defineProps({
   requests: { type: Array, required: true },
   markets: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
@@ -20,8 +19,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['approve', 'reject']);
-
-const marketById = computed(() => new Map(props.markets.map((market) => [String(market.id), market])));
 
 const statusMeta = (status) => {
   const map = {
@@ -33,13 +30,8 @@ const statusMeta = (status) => {
   return map[status] || { label: status, variant: 'outline' };
 };
 
-function getMarketName(marketId) {
-  return marketById.value.get(String(marketId))?.name || '—';
-}
-
 function getCategories(item) {
-  if (item.categories?.length) return item.categories.join(', ');
-  return item.category || '—';
+  return item.activityType || item.category || '—';
 }
 </script>
 
@@ -49,7 +41,7 @@ function getCategories(item) {
       <TableHeader>
         <TableRow>
           <TableHead>Demandeur</TableHead>
-          <TableHead>Marché</TableHead>
+          <TableHead>Étal</TableHead>
           <TableHead>Activité</TableHead>
           <TableHead>Catégories</TableHead>
           <TableHead>Date</TableHead>
@@ -84,14 +76,9 @@ function getCategories(item) {
           </TableCell>
 
           <TableCell class="whitespace-normal align-top">
-            <div class="space-y-1">
-              <p class="text-sm text-foreground">
-                {{ getMarketName(item.requestedMarketId) }}
-              </p>
-              <p class="text-xs text-muted-foreground">
-                {{ item.assignedPlaceNumber || 'À assigner' }}
-              </p>
-            </div>
+            <p class="text-sm text-foreground">
+              {{ item.assignedPlaceNumber || 'À assigner' }}
+            </p>
           </TableCell>
 
           <TableCell class="whitespace-normal align-top">

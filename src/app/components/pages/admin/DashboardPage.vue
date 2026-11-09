@@ -2,7 +2,6 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  Package,
   MapPin,
   FileText,
   Coins,
@@ -30,10 +29,8 @@ const {
   isMerchant,
   assignedMerchant,
   scopedMerchants,
-  scopedProducts,
   scopedPendingRequests,
   scopedPendingReceipts,
-  scopedSalesTotal,
   scopedOccupiedPlaces,
   scopedTotalPlaces,
   scopedFreePlaces,
@@ -130,9 +127,9 @@ const formatAmount = (n) => Number(n || 0).toLocaleString('fr-FR');
       </template>
       <StatCard
         v-else
-        title="Mes revenus validés"
-        :value="`${formatAmount(scopedSalesTotal)} BIF`"
-        :icon="DollarSign"
+        title="Reçus en attente"
+        :value="scopedPendingReceipts.length"
+        :icon="Coins"
         color="pink"
       />
 
@@ -154,14 +151,7 @@ const formatAmount = (n) => Number(n || 0).toLocaleString('fr-FR');
       />
 
       <StatCard
-        v-if="isMerchant"
-        title="Mes produits"
-        :value="scopedProducts.length"
-        :icon="CheckCircle"
-        color="success"
-      />
-      <StatCard
-        v-else
+        v-if="!isMerchant"
         title="Commerçants"
         :value="scopedMerchants.length"
         :icon="Users"
@@ -245,15 +235,6 @@ const formatAmount = (n) => Number(n || 0).toLocaleString('fr-FR');
           >
             <Coins class="w-5 h-5" />
             <span class="text-xs">Loyers</span>
-          </Button>
-          <Button
-            v-if="isMerchant"
-            variant="outline"
-            class="h-auto py-4 flex flex-col gap-2 rounded-xl"
-            @click="router.push('/admin/products')"
-          >
-            <Package class="w-5 h-5" />
-            <span class="text-xs">Produits</span>
           </Button>
           <Button
             v-if="isMarketAdmin || isMarketOwner"

@@ -2,20 +2,11 @@ import { getErrorMessage } from '../api/client.js';
 import { placeToApi } from '../api/mappers.js';
 import { PLACE_STATUS } from '../utils/placeStatus.js';
 import {
-  fetchProductCategories,
-  fetchAllProductCategories,
-  createProductCategory,
-  updateProductCategoryApi,
-  deleteProductCategoryApi,
   fetchMarkets,
   fetchPlaces,
   fetchMerchants,
-  fetchProducts,
   fetchPlaceRequests,
   fetchReceipts,
-  fetchSales,
-  fetchSale,
-  createSale,
   fetchUsers,
   createUser,
   updateUserApi,
@@ -31,9 +22,6 @@ import {
   updatePlaceApi,
   deletePlaceApi,
   assignPlaceChief,
-  createProduct,
-  updateProductApi,
-  deleteProductApi,
   createPlaceRequest,
   approvePlaceRequest,
   rejectPlaceRequest,
@@ -46,7 +34,6 @@ import { sameId } from '../utils/ids.js';
 export function createDataActions(state) {
   let refreshPublicData = null;
   let refreshAllData = null;
-  let productCategoriesRevision = 0;
 
   const bindRefreshers = ({ refreshPublicData: publicRefresher, refreshAllData: allRefresher }) => {
     refreshPublicData = publicRefresher;
@@ -64,31 +51,18 @@ export function createDataActions(state) {
   };
 
   const loadPublicCoreData = async () => {
-    const categoriesRevision = productCategoriesRevision;
-    const [markets, tags] = await Promise.all([
-      fetchMarkets(),
-      fetchProductCategories(),
-    ]);
-
-    if (categoriesRevision === productCategoriesRevision) {
-      state.productCategories.value = tags;
-    }
-
-    state.markets.value = markets;
+    state.markets.value = await fetchMarkets();
   };
 
   const loadPublicSupplementalData = async () => {
-    const [places, products, merchants] = await Promise.all([
+    const [places, merchants] = await Promise.all([
       fetchPlaces(),
-      fetchProducts(),
       fetchMerchants(),
     ]);
     state.places.value = places;
-    state.products.value = products;
     state.merchants.value = merchants;
     return {
       places,
-      products,
       merchants,
     };
   };
@@ -100,14 +74,12 @@ export function createDataActions(state) {
 
   const loadAuthenticatedData = async () => {
     const user = state.currentUser.value;
-    const [requests, receipts, sales] = await Promise.all([
+    const [requests, receipts] = await Promise.all([
       fetchPlaceRequests(user),
       fetchReceipts(user),
-      fetchSales({}, user),
     ]);
     state.requests.value = requests;
     state.receipts.value = receipts;
-    state.sales.value = sales;
   };
 
   const loadUsers = async () => {
@@ -134,36 +106,6 @@ export function createDataActions(state) {
       state.showToast("Demande d'octroi de place envoyée avec succès", 'success');
     } catch (error) {
       state.showToast(getErrorMessage(error), 'error');
-    }
-  };
-
-  const loadSales = async (params = {}) => {
-    try {
-      state.sales.value = await fetchSales(params, state.currentUser.value);
-    } catch (error) {
-      state.showToast(getErrorMessage(error, 'Erreur de chargement des ventes'), 'error');
-    }
-  };
-
-  const getSale = async (id) => {
-    try {
-      return await fetchSale(id);
-    } catch (error) {
-      state.showToast(getErrorMessage(error, 'Vente introuvable'), 'error');
-      return null;
-    }
-  };
-
-  const addSale = async (sale) => {
-    try {
-      const created = await createSale(sale);
-      state.sales.value = [created, ...state.sales.value];
-      await loadPublicData();
-      state.showToast(`Vente enregistrée — ${created.invoiceNumber}`, 'success');
-      return created;
-    } catch (error) {
-      state.showToast(getErrorMessage(error), 'error');
-      return null;
     }
   };
 
@@ -225,36 +167,6 @@ export function createDataActions(state) {
     }
   };
 
-  const addProduct = async (product) => {
-    try {
-      const created = await createProduct(product);
-      state.products.value = [created, ...state.products.value];
-      state.showToast(`Produit "${product.name}" ajouté avec succès`, 'success');
-    } catch (error) {
-      state.showToast(getErrorMessage(error), 'error');
-    }
-  };
-
-  const updateProduct = async (product) => {
-    try {
-      const updated = await updateProductApi(product.id, product);
-      state.products.value = state.products.value.map((p) => (p.id === product.id ? updated : p));
-      state.showToast(`Produit "${product.name}" mis à jour`, 'success');
-    } catch (error) {
-      state.showToast(getErrorMessage(error), 'error');
-    }
-  };
-
-  const deleteProduct = async (id) => {
-    try {
-      await deleteProductApi(id);
-      state.products.value = state.products.value.filter((p) => p.id !== id);
-      state.showToast('Produit retiré du catalogue', 'success');
-    } catch (error) {
-      state.showToast(getErrorMessage(error), 'error');
-    }
-  };
-
   const addMarket = async (market) => {
     try {
       const created = await createMarket(market);
@@ -283,66 +195,6 @@ export function createDataActions(state) {
       return true;
     } catch (error) {
       state.showToast(getErrorMessage(error, 'Impossible de supprimer ce marché'), 'error');
-      return false;
-    }
-  };
-
-  const loadProductCategories = async () => {
-    const categoriesRevision = productCategoriesRevision;
-    try {
-      const categories = await fetchAllProductCategories();
-      if (categoriesRevision !== productCategoriesRevision) return;
-      state.productCategories.value = categories;
-    } catch (error) {
-      state.showToast(getErrorMessage(error, 'Erreur de chargement des catégories'), 'error');
-    }
-  };
-
-  const syncCategoriesAfterMutation = async () => {
-    productCategoriesRevision += 1;
-    const categoriesRevision = productCategoriesRevision;
-    try {
-      const [categories, markets] = await Promise.all([
-        fetchAllProductCategories(),
-        fetchMarkets(),
-      ]);
-      if (categoriesRevision !== productCategoriesRevision) return;
-      state.productCategories.value = categories;
-      state.markets.value = markets;
-    } catch (error) {
-      state.showToast(getErrorMessage(error, 'Erreur de synchronisation des catégories'), 'error');
-    }
-  };
-
-  const addProductCategory = async (category) => {
-    try {
-      await createProductCategory(category);
-      await syncCategoriesAfterMutation();
-      state.showToast(`Catégorie "${category.name}" créée avec succès`, 'success');
-    } catch (error) {
-      state.showToast(getErrorMessage(error), 'error');
-    }
-  };
-
-  const updateProductCategory = async (category) => {
-    try {
-      await updateProductCategoryApi(category.id, category);
-      await syncCategoriesAfterMutation();
-      state.showToast(`Catégorie "${category.name}" mise à jour`, 'success');
-    } catch (error) {
-      state.showToast(getErrorMessage(error), 'error');
-    }
-  };
-
-  const deleteProductCategory = async (id) => {
-    try {
-      await deleteProductCategoryApi(id);
-      state.productCategories.value = state.productCategories.value.filter((c) => !sameId(c.id, id));
-      await syncCategoriesAfterMutation();
-      state.showToast('Catégorie supprimée', 'success');
-      return true;
-    } catch (error) {
-      state.showToast(getErrorMessage(error, 'Impossible de supprimer cette catégorie'), 'error');
       return false;
     }
   };
@@ -503,7 +355,7 @@ export function createDataActions(state) {
         id: place.id,
         number: place.number || place.id,
         status,
-        productCategoryIds: place.categoryIds || [],
+        category: place.category || null,
       }));
       if (merchantId && status === PLACE_STATUS.OCCUPIED) {
         await assignPlaceChief(place.placeId, merchantId);
@@ -526,22 +378,12 @@ export function createDataActions(state) {
     loadAuthenticatedData,
     loadUsers,
     addPlaceRequest,
-    loadSales,
-    getSale,
-    addSale,
     addPaymentReceipt,
     updateRequestStatus,
     updateReceiptStatus,
-    addProduct,
-    updateProduct,
-    deleteProduct,
     addMarket,
     updateMarket,
     deleteMarket,
-    loadProductCategories,
-    addProductCategory,
-    updateProductCategory,
-    deleteProductCategory,
     addBlock,
     updateBlock,
     deleteBlock,

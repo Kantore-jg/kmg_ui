@@ -21,9 +21,6 @@ defineProps({
         <h4 class="text-[10px] text-primary font-extrabold uppercase tracking-widest mb-2.5">Accès & Navigation rapide</h4>
         <div class="grid grid-cols-2 gap-2 text-slate-300 font-medium">
           <button @click="onGoHome" class="text-left hover:text-white">Accueil</button>
-          <button @click="onGoToTab('markets')" class="text-left hover:text-white">Marchés Connectés</button>
-          <button @click="onGoToTab('products')" class="text-left hover:text-white">Produits phares</button>
-          <button @click="onGoToTab('price-trends')" class="text-left hover:text-white">Tendances prix</button>
           <button @click="onGoToTab('merchants')" class="text-left hover:text-white">Annuaire Commerçants</button>
           <button @click="onGoToTab('request')" class="text-left hover:text-white text-primary">Demander une place</button>
         </div>

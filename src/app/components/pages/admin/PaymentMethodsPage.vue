@@ -194,16 +194,6 @@ const marketName = (id) => markets.value.find((m) => m.id == id)?.name || '—';
           <Input v-model="searchQuery" placeholder="Banque, compte..." class="pl-9 bg-card" />
         </div>
       </div>
-      <div v-if="isSuperAdmin" class="space-y-1 w-full sm:w-56">
-        <label class="text-xs font-medium text-muted-foreground">Marché</label>
-        <Select v-model="marketFilter">
-          <SelectTrigger class="bg-card"><SelectValue placeholder="Tous" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les marchés</SelectItem>
-            <SelectItem v-for="m in markets" :key="m.id" :value="String(m.id)">{{ m.name }}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
     </FilterBar>
 
     <div class="rounded-lg border border-border bg-card">
@@ -211,7 +201,6 @@ const marketName = (id) => markets.value.find((m) => m.id == id)?.name || '—';
         <TableHeader>
           <TableRow>
             <TableHead>Nom</TableHead>
-            <TableHead v-if="isSuperAdmin">Marché</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Compte</TableHead>
             <TableHead>Titulaire</TableHead>
@@ -221,18 +210,17 @@ const marketName = (id) => markets.value.find((m) => m.id == id)?.name || '—';
         </TableHeader>
         <TableBody>
           <TableRow v-if="loading">
-            <TableCell :colspan="canManage ? 7 : 6" class="text-center py-8 text-muted-foreground">
+            <TableCell :colspan="canManage ? 6 : 5" class="text-center py-8 text-muted-foreground">
               Chargement...
             </TableCell>
           </TableRow>
           <TableRow v-else-if="!filteredMethods.length">
-            <TableCell :colspan="canManage ? 7 : 6" class="text-center py-8 text-muted-foreground">
+            <TableCell :colspan="canManage ? 6 : 5" class="text-center py-8 text-muted-foreground">
               Aucun moyen de paiement.
             </TableCell>
           </TableRow>
           <TableRow v-for="m in filteredMethods" :key="m.id">
             <TableCell class="font-medium">{{ m.name }}</TableCell>
-            <TableCell v-if="isSuperAdmin">{{ marketName(m.marketId) }}</TableCell>
             <TableCell>{{ typeLabels[m.type] || m.type }}</TableCell>
             <TableCell>{{ m.accountNumber || '—' }}</TableCell>
             <TableCell>{{ m.accountName || '—' }}</TableCell>
@@ -266,15 +254,6 @@ const marketName = (id) => markets.value.find((m) => m.id == id)?.name || '—';
           <DialogTitle>{{ editing ? 'Modifier' : 'Nouveau moyen de paiement' }}</DialogTitle>
         </DialogHeader>
         <form class="space-y-4" @submit.prevent="handleSubmit">
-          <div v-if="isSuperAdmin && !editing" class="space-y-2">
-            <Label>Marché</Label>
-            <Select v-model="form.marketId">
-              <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="m in markets" :key="m.id" :value="m.id">{{ m.name }}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
           <div class="space-y-2">
             <Label>Nom</Label>
             <Input v-model="form.name" required placeholder="Ex. Banque de Burundi" />

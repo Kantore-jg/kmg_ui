@@ -233,16 +233,6 @@ const handleReject = async (receiptId) => {
           </SelectContent>
         </Select>
       </div>
-      <div v-if="isSuperAdmin" class="space-y-1 w-full sm:w-56">
-        <label class="text-xs font-medium text-muted-foreground">Marché</label>
-        <Select v-model="marketFilter">
-          <SelectTrigger class="bg-card"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous</SelectItem>
-            <SelectItem v-for="m in markets" :key="m.id" :value="String(m.id)">{{ m.name }}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
       <div class="space-y-1 w-full sm:w-56">
         <label class="text-xs font-medium text-muted-foreground">Banque</label>
         <Select v-model="paymentMethodFilter">

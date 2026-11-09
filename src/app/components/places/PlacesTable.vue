@@ -37,7 +37,6 @@ const statusLabel = placeStatusLabel;
       <TableHeader>
         <TableRow>
           <TableHead>Étal</TableHead>
-          <TableHead>Marché</TableHead>
           <TableHead>Bloc / Allée</TableHead>
           <TableHead>Catégories</TableHead>
           <TableHead>Occupant</TableHead>
@@ -47,18 +46,17 @@ const statusLabel = placeStatusLabel;
       </TableHeader>
       <TableBody>
         <TableRow v-if="!places.length">
-          <TableCell :colspan="readonly ? 6 : 7" class="text-center py-8 text-muted-foreground">
+          <TableCell :colspan="readonly ? 5 : 6" class="text-center py-8 text-muted-foreground">
             Aucun emplacement trouvé.
           </TableCell>
         </TableRow>
         <TableRow v-for="place in places" :key="place.id + place.marketId">
           <TableCell class="font-medium">{{ place.id }}</TableCell>
-          <TableCell class="text-sm">{{ getMarketName(place.marketId) }}</TableCell>
           <TableCell class="text-sm text-muted-foreground">
             {{ place.blockName }} · {{ place.rowName }}
           </TableCell>
           <TableCell>
-            <span v-if="place.categories?.length" class="text-sm">{{ place.categories.join(', ') }}</span>
+            <span v-if="place.category" class="text-sm">{{ place.category }}</span>
             <span v-else class="text-sm text-muted-foreground">—</span>
           </TableCell>
           <TableCell>

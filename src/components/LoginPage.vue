@@ -42,9 +42,6 @@ function resolveRedirect(user) {
   if (redirect && redirect.startsWith('/')) {
     return redirect;
   }
-  if (user.role === 'COMMERCE_USER') {
-    return '/commerce';
-  }
   if (['SUPER_ADMIN', 'ADMIN_MARCHE', 'PROPRIETAIRE_MARCHE', 'COMMERCANT'].includes(user.role)) {
     return '/admin';
   }

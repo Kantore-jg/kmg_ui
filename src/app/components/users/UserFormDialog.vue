@@ -34,9 +34,9 @@ const { markets, currentUser } = useApp();
 const { isSuperAdmin, scopedMarkets } = useAdminScope();
 
 const ALL_ROLES = [
-  { value: 'SUPER_ADMIN', label: 'Super Administrateur' },
-  { value: 'ADMIN_MARCHE', label: 'Admin Marché' },
-  { value: 'PROPRIETAIRE_MARCHE', label: 'Propriétaire Marché' },
+  { value: 'SUPER_ADMIN', label: 'Admin système' },
+  { value: 'ADMIN_MARCHE', label: 'Gestionnaire du marché' },
+  { value: 'PROPRIETAIRE_MARCHE', label: 'Propriétaire' },
   { value: 'COMMERCANT', label: 'Commerçant' },
   { value: 'USER', label: 'Utilisateur' },
 ];
@@ -109,7 +109,6 @@ const close = () => emit('update:open', false);
 const handleSubmit = () => {
   if (!form.value.name.trim() || !form.value.email.trim()) return;
   if (!isEditing.value && !form.value.password.trim()) return;
-  if (['ADMIN_MARCHE', 'PROPRIETAIRE_MARCHE'].includes(form.value.role) && !form.value.marketId) return;
 
   emit('submit', {
     ...(props.user || {}),
@@ -182,19 +181,6 @@ const handleSubmit = () => {
             </Select>
           </div>
 
-          <div v-if="showMarketSelect" class="space-y-2">
-            <Label>Marché assigné</Label>
-            <Select v-model="form.marketId">
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un marché" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="m in availableMarkets" :key="m.id" :value="m.id">
-                  {{ m.name }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
         <div class="flex items-center justify-between rounded-lg border border-border p-3">

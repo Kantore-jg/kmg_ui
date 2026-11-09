@@ -14,7 +14,6 @@ defineProps({
   open: { type: Boolean, default: false },
   merchant: { type: Object, default: null },
   marketName: { type: String, default: '' },
-  productsCount: { type: Number, default: 0 },
 });
 
 const emit = defineEmits(['update:open']);
@@ -52,11 +51,6 @@ const emit = defineEmits(['update:open']);
       <div class="space-y-2">
         <p class="text-xs font-medium text-muted-foreground uppercase">Bio</p>
         <p class="text-sm text-muted-foreground leading-relaxed">{{ merchant.bio }}</p>
-      </div>
-
-      <div class="p-3 rounded-lg bg-muted/40 border border-border text-sm">
-        <span class="font-medium">{{ productsCount }}</span>
-        <span class="text-muted-foreground"> produit(s) référencé(s) au catalogue</span>
       </div>
 
       <DialogFooter>

@@ -1,11 +1,9 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import { Store, Upload } from 'lucide-vue-next';
-import { useApp } from '../../../composables/useApp.js';
 import Button from '../ui/Button.vue';
 import Input from '../ui/Input.vue';
 import Label from '../ui/Label.vue';
-import ProductCategoryMultiSelect from './ProductCategoryMultiSelect.vue';
 import {
   getProvinceOptions,
   getCommuneOptions,
@@ -36,8 +34,6 @@ const props = defineProps({
 
 const emit = defineEmits(['update:open', 'submit']);
 
-const { productCategories } = useApp();
-
 const PROVINCE_OPTIONS = getProvinceOptions();
 
 const createEmptyForm = (market = null) => ({
@@ -48,7 +44,6 @@ const createEmptyForm = (market = null) => ({
   colline: market?.colline || '',
   description: market?.description || '',
   totalPlaces: market?.totalPlaces || 50,
-  productCategoryIds: [...(market?.productCategoryIds || [])],
 });
 
 const form = ref({
@@ -59,7 +54,6 @@ const form = ref({
   colline: '',
   description: '',
   totalPlaces: 50,
-  productCategoryIds: [],
 });
 
 const imageFile = ref(null);
@@ -150,7 +144,6 @@ const handleSubmit = () => {
     location,
     description: form.value.description.trim(),
     totalPlaces: Number(form.value.totalPlaces) || 0,
-    productCategoryIds: form.value.productCategoryIds,
     imageFile: imageFile.value,
   });
   close();
@@ -246,15 +239,6 @@ const handleSubmit = () => {
             rows="3"
             class="flex w-full rounded-md border border-input bg-input-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
             placeholder="Description du marché..."
-          />
-        </div>
-
-        <div class="space-y-2">
-          <Label>Types de produits (optionnel)</Label>
-          <ProductCategoryMultiSelect
-            v-model="form.productCategoryIds"
-            :options="productCategories"
-            placeholder="Choisir les catégories de produits..."
           />
         </div>
 

@@ -46,9 +46,9 @@ const loading = ref(false);
 const deleting = ref(false);
 
 const ALL_ROLES = [
-  { value: 'SUPER_ADMIN', label: 'Super Administrateur' },
-  { value: 'ADMIN_MARCHE', label: 'Admin Marché' },
-  { value: 'PROPRIETAIRE_MARCHE', label: 'Propriétaire Marché' },
+  { value: 'SUPER_ADMIN', label: 'Admin système' },
+  { value: 'ADMIN_MARCHE', label: 'Gestionnaire du marché' },
+  { value: 'PROPRIETAIRE_MARCHE', label: 'Propriétaire' },
   { value: 'COMMERCANT', label: 'Commerçant' },
   { value: 'USER', label: 'Utilisateur' },
 ];
@@ -192,16 +192,6 @@ const handleToggleActive = async (user, isActive) => {
             <SelectItem value="all">Tous</SelectItem>
             <SelectItem value="active">Actifs</SelectItem>
             <SelectItem value="inactive">Désactivés</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div v-if="isSuperAdmin" class="space-y-1 w-full lg:w-44">
-        <label class="text-xs font-medium text-muted-foreground">Marché</label>
-        <Select v-model="marketFilter">
-          <SelectTrigger class="bg-card"><SelectValue placeholder="Tous" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les marchés</SelectItem>
-            <SelectItem v-for="m in scopedMarkets" :key="m.id" :value="String(m.id)">{{ m.name }}</SelectItem>
           </SelectContent>
         </Select>
       </div>

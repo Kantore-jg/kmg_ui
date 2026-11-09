@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { Printer, Users, MapPin, Package } from 'lucide-vue-next';
+import { Printer, Users, MapPin } from 'lucide-vue-next';
 import { useAdminScope } from '../../../composables/useAdminScope.js';
 import { usePrintReport } from '../../../composables/usePrintReport.js';
 import PageHeader from '../layout/PageHeader.vue';
@@ -8,13 +8,12 @@ import PageHeader from '../layout/PageHeader.vue';
 const {
   isSuperAdmin,
   isMarketAdmin,
-  isMerchant,
   assignedMarketId,
   scopedMarkets,
   findMarket,
 } = useAdminScope();
 
-const { openMerchantsPrint, openPlacesPrint, openProductsPrint } = usePrintReport();
+const { openMerchantsPrint, openPlacesPrint } = usePrintReport();
 
 const marketName = computed(() => {
   if (!assignedMarketId.value) return null;
@@ -47,18 +46,6 @@ const reports = computed(() => {
       },
     );
   }
-
-  items.push({
-    id: 'products',
-    title: isMerchant.value ? 'Mon catalogue produits' : 'Catalogue produits du marché',
-    description: isMerchant.value
-      ? 'Liste imprimable de vos produits et tarifs'
-      : marketName.value
-        ? `Produits référencés sur ${marketName.value}`
-        : 'Catalogue produits filtrable par marché',
-    icon: Package,
-    action: () => openProductsPrint({ marketId }),
-  });
 
   return items;
 });

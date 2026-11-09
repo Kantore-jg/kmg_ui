@@ -6,13 +6,11 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { useApp } from '../composables/useApp.js';
-import { categoriesForMarket, findMarketById } from '../utils/categories.js';
-import PlaceRequestCategoryMultiSelect from './PlaceRequestCategoryMultiSelect.vue';
-import { Store, User, Phone, Briefcase, FileText, CheckCircle2, Clock, AlertTriangle } from 'lucide-vue-next';
+import { findMarketById } from '../utils/categories.js';
+import { Store, User, Phone, FileText } from 'lucide-vue-next';
 
 const {
   markets,
-  requests,
   addPlaceRequest,
   currentUser,
   showToast,
@@ -21,16 +19,11 @@ const {
 const candidateName = ref(currentUser.value?.name || '');
 const candidatePhone = ref(currentUser.value?.phone || '');
 const activity = ref('');
-const selectedCategoryIds = ref([]);
 const targetMarketId = ref(markets.value[0]?.id ?? null);
 const description = ref('');
 
 const selectedMarket = computed(() =>
   findMarketById(markets.value, targetMarketId.value),
-);
-
-const availableCategories = computed(() =>
-  categoriesForMarket(selectedMarket.value),
 );
 
 watch(
@@ -39,17 +32,6 @@ watch(
     if (!targetMarketId.value && items.length) {
       targetMarketId.value = items[0].id;
     }
-  },
-  { immediate: true },
-);
-
-watch(
-  availableCategories,
-  (cats) => {
-    const allowed = new Set(cats.map((c) => String(c.id)));
-    selectedCategoryIds.value = selectedCategoryIds.value.filter((id) =>
-      allowed.has(String(id)),
-    );
   },
   { immediate: true },
 );
@@ -68,27 +50,17 @@ function handleSubmit(e) {
     showToast('Aucun marché disponible.', 'error');
     return;
   }
-  if (!selectedCategoryIds.value.length) {
-    showToast('Sélectionnez au moins une catégorie d\'activité.', 'error');
-    return;
-  }
 
   addPlaceRequest({
     merchantName: candidateName.value,
     merchantPhone: candidatePhone.value,
     activityType: activity.value,
-    productCategoryIds: selectedCategoryIds.value,
     requestedMarketId: targetMarketId.value,
     description: description.value,
   });
 
   activity.value = '';
   description.value = '';
-  selectedCategoryIds.value = [];
-}
-
-function findMarket(marketId) {
-  return findMarketById(markets.value, marketId);
 }
 </script>
 
@@ -138,37 +110,13 @@ function findMarket(marketId) {
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="space-y-1">
-              <label class="text-slate-500 block">Marché Souhaité</label>
-              <div class="flex items-center gap-2 bg-background border border-slate-200 rounded-xl px-3 py-2 mr-1">
-                <Store class="w-4 h-4 text-slate-400 shrink-0" />
-                <select
-                  v-model="targetMarketId"
-                  class="bg-transparent border-0 outline-none w-full text-xs cursor-pointer text-slate-700"
-                >
-                  <option v-for="m in markets" :key="m.id" :value="m.id">{{ m.name }}</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="space-y-1">
-              <label class="text-slate-500 block">Catégories d'activité</label>
-              <div class="flex items-center gap-2 bg-background border border-slate-200 rounded-xl px-3 py-2 mr-1 min-h-[42px]">
-                <Briefcase class="w-4 h-4 text-slate-400 shrink-0" />
-                <PlaceRequestCategoryMultiSelect
-                  v-model="selectedCategoryIds"
-                  :options="availableCategories"
-                  placeholder="Choisis les catégories..."
-                  :disabled="!availableCategories.length"
-                />
-              </div>
-              <p v-if="!availableCategories.length" class="text-[10px] text-slate-400 font-medium">
-                Ce marché n'a pas encore de catégories configurées.
-              </p>
-              <!-- <p v-else class="text-[10px] text-slate-400 font-medium">
-                Sélectionnez toutes les catégories de produits que vous comptez vendre.
-              </p> -->
+          <div class="space-y-1">
+            <label class="text-slate-500 block">Marché</label>
+            <div class="flex items-center gap-2 bg-background border border-slate-200 rounded-xl px-3 py-2.5">
+              <Store class="w-4 h-4 text-slate-400 shrink-0" />
+              <span class="text-xs text-slate-800 font-medium">
+                {{ selectedMarket?.name || 'Marché en cours de configuration' }}
+              </span>
             </div>
           </div>
 
@@ -199,8 +147,7 @@ function findMarket(marketId) {
 
           <button
             type="submit"
-            class="w-full bg-primary hover:bg-primary transition-all text-white font-extrabold py-3.5 rounded-xl text-center text-xs tracking-wide shadow shadow-emerald-700/30 pt-3.5 disabled:opacity-60 disabled:cursor-not-allowed"
-            :disabled="!availableCategories.length"
+            class="w-full bg-primary hover:bg-primary transition-all text-white font-extrabold py-3.5 rounded-xl text-center text-xs tracking-wide shadow shadow-emerald-700/30 pt-3.5"
           >
             Soumettre
           </button>

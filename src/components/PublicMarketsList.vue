@@ -208,17 +208,6 @@ function resetFilters() {
               </div>
             </div>
 
-            <!-- Product categories -->
-            <div v-if="m.productCategories?.length" class="flex flex-wrap gap-1">
-              <span
-                v-for="(category, i) in m.productCategories"
-                :key="i"
-                class="text-[9.5px] font-bold text-slate-500 bg-background px-2 py-0.5 rounded-md border border-slate-100/50"
-              >
-                {{ category }}
-              </span>
-            </div>
-
             <!-- Button -->
             <button
               @click="goToMarket(m.id)"

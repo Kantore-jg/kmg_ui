@@ -12,21 +12,10 @@ export function usePrintReport() {
 
   const openMerchantsPrint = (marketId) => openPrint('merchants', { market: marketId });
   const openPlacesPrint = (marketId) => openPrint('places', { market: marketId });
-  const openProductsPrint = (options = {}) =>
-    openPrint('products', {
-      market: options.marketId,
-      merchant: options.merchantId,
-    });
-
-  const openInvoicePrint = (saleId) => openPrint('invoice', { sale: saleId });
-  const openSaleReceiptPrint = (saleId) => openPrint('receipt', { sale: saleId });
 
   return {
     openPrint,
     openMerchantsPrint,
     openPlacesPrint,
-    openProductsPrint,
-    openInvoicePrint,
-    openSaleReceiptPrint,
   };
 }

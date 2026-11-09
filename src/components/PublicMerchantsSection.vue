@@ -8,21 +8,21 @@ import PublicMerchantCard from './PublicMerchantCard.vue';
 const props = defineProps({
   merchants: { type: Array, default: () => [] },
   markets: { type: Array, default: () => [] },
-  productCategories: { type: Array, default: () => [] },
   onSelectMerchant: { type: Function, required: true },
 });
 
 const merchantQuery = ref('');
-const merchantCategory = ref('all');
 
 const getMarketById = (marketId) => props.markets.find((market) => sameId(market.id, marketId));
 
 const filteredMerchants = computed(() =>
   props.merchants.filter((m) => {
     const query = merchantQuery.value.toLowerCase();
-    const matchesQuery = m.name.toLowerCase().includes(query) || m.category.toLowerCase().includes(query);
-    const matchesCategory = merchantCategory.value === 'all' || m.category === merchantCategory.value;
-    return matchesQuery && matchesCategory;
+    return (
+      !query
+      || m.name.toLowerCase().includes(query)
+      || (m.category || '').toLowerCase().includes(query)
+    );
   }),
 );
 </script>
@@ -42,19 +42,10 @@ const filteredMerchants = computed(() =>
         <input
           v-model="merchantQuery"
           type="text"
-          placeholder="Rechercher par nom d'exploitant ou filière..."
+          placeholder="Rechercher par nom d'exploitant..."
           class="bg-transparent border-0 outline-none text-xs w-full text-slate-700"
         />
       </div>
-      <select
-        v-model="merchantCategory"
-        class="bg-background hover:bg-slate-100/60 border border-slate-200/60 text-xs font-bold rounded-xl px-3 py-2 cursor-pointer text-slate-700 w-full md:w-auto"
-      >
-        <option value="all">Spécialité / Tout</option>
-        <option v-for="cat in productCategories" :key="cat.id" :value="cat.name">
-          {{ cat.name }}
-        </option>
-      </select>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -8,8 +8,6 @@ import {
   Store,
   MapPin,
   Users,
-  Package,
-  Tags,
   FileText,
   Coins,
   Menu,
@@ -21,9 +19,7 @@ import {
   Eye,
   Building2,
   ChevronLeft,
-  Circle,
   Printer,
-  ShoppingCart,
   CalendarDays,
   Landmark,
 } from 'lucide-vue-next';
@@ -92,10 +88,16 @@ const navigation = computed(() => {
   if (isSuperAdmin.value) {
     items.push(
       { id: 'users', name: 'Utilisateurs', icon: UserCog, path: '/admin/users' },
-      { id: 'markets', name: 'Marchés', icon: Store, path: '/admin/markets' },
-      { id: 'commerces', name: 'Commerces indépendants', icon: Building2, path: '/admin/commerces' },
+      { id: 'markets', name: 'Le marché', icon: Store, path: '/admin/markets' },
       { id: 'places', name: 'Emplacements', icon: MapPin, path: '/admin/places' },
       { id: 'merchants', name: 'Commerçants', icon: Users, path: '/admin/merchants' },
+      {
+        id: 'requests',
+        name: 'Demandes',
+        icon: FileText,
+        path: '/admin/requests',
+        badge: pendingRequestsCount.value,
+      },
     );
   }
 
@@ -128,32 +130,6 @@ const navigation = computed(() => {
     );
   }
 
-  if (isSuperAdmin.value || isMarketAdmin.value) {
-    items.push({
-      id: 'categories',
-      name: 'Catégories',
-      icon: Tags,
-      path: '/admin/categories',
-    });
-  }
-
-  if (isMerchant.value) {
-    items.push(
-      {
-        id: 'products',
-        name: 'Produits',
-        icon: Package,
-        path: '/admin/products',
-      },
-      {
-        id: 'sales',
-        name: 'Ventes',
-        icon: ShoppingCart,
-        path: '/admin/sales',
-      },
-    );
-  }
-
   if (isSuperAdmin.value || isMarketAdmin.value || isMarketOwner.value) {
     items.push(
       {
@@ -171,7 +147,7 @@ const navigation = computed(() => {
     );
   }
 
-  if (isSuperAdmin.value || isMarketAdmin.value || isMarketOwner.value || isMerchant.value) {
+  if (isSuperAdmin.value || isMarketAdmin.value || isMarketOwner.value) {
     items.push({
       id: 'reports',
       name: 'Rapports',

@@ -1,101 +1,27 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { Plus, Search, Store } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+import { Store } from 'lucide-vue-next';
 import { useApp } from '../../../../composables/useApp.js';
-import { sameId } from '../../../../utils/ids.js';
+import { getAdministrativeLocationLabel } from '../../../../utils/burundiLocations.js';
 import PageHeader from '../../layout/PageHeader.vue';
-import FilterBar from '../../layout/FilterBar.vue';
-import StatCard from '../../StatCard.vue';
-import MarketsTable from '../../markets/MarketsTable.vue';
 import MarketFormDialog from '../../markets/MarketFormDialog.vue';
-import MarketViewDialog from '../../markets/MarketViewDialog.vue';
 import Button from '../../ui/Button.vue';
-import Input from '../../ui/Input.vue';
 import { Card, CardContent } from '../../ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../ui/select';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '../../ui/alert-dialog';
 
-const { markets, places, merchants, products, addMarket, updateMarket, deleteMarket } = useApp();
+const { markets, places, merchants, addMarket, updateMarket } = useApp();
 
-const searchQuery = ref('');
-const provinceFilter = ref('all');
 const formOpen = ref(false);
-const viewOpen = ref(false);
-const deleteOpen = ref(false);
-const editingMarket = ref(null);
-const viewingMarket = ref(null);
-const marketToDelete = ref(null);
 
-const provinces = computed(() => {
-  const set = new Set(markets.value.map((m) => m.province).filter(Boolean));
-  return Array.from(set).sort();
-});
-
-const filteredMarkets = computed(() => {
-  return markets.value.filter((m) => {
-    const q = searchQuery.value.toLowerCase();
-    const locationLabel = [m.province, m.commune, m.zone, m.colline].filter(Boolean).join(' ');
-    const matchesQuery =
-      !q ||
-      m.name.toLowerCase().includes(q) ||
-      locationLabel.toLowerCase().includes(q);
-    const matchesProvince = provinceFilter.value === 'all' || m.province === provinceFilter.value;
-    return matchesQuery && matchesProvince;
-  });
-});
-
-const totalPlaces = computed(() =>
-  markets.value.reduce((sum, m) => sum + m.totalPlaces, 0),
+const market = computed(() => markets.value[0] || null);
+const placeCount = computed(() =>
+  market.value ? places.value.filter((place) => place.marketId == market.value.id).length : 0,
+);
+const merchantCount = computed(() =>
+  market.value ? merchants.value.filter((item) => item.activeMarketId == market.value.id).length : 0,
 );
 
-const totalOccupied = computed(() =>
-  markets.value.reduce((sum, m) => sum + m.occupiedPlaces, 0),
-);
-
-const avgOccupation = computed(() => {
-  if (!totalPlaces.value) return 0;
-  return Math.round((totalOccupied.value / totalPlaces.value) * 100);
-});
-
-const getMarketStats = (marketId) => ({
-  places: places.value.filter((p) => sameId(p.marketId, marketId)).length,
-  merchants: merchants.value.filter((m) => sameId(m.activeMarketId, marketId)).length,
-  products: products.value.filter((p) => sameId(p.marketId, marketId)).length,
-});
-
-const openCreate = () => {
-  editingMarket.value = null;
+const openForm = () => {
   formOpen.value = true;
-};
-
-const openEdit = (market) => {
-  editingMarket.value = market;
-  formOpen.value = true;
-};
-
-const openView = (market) => {
-  viewingMarket.value = market;
-  viewOpen.value = true;
-};
-
-const openDelete = (market) => {
-  marketToDelete.value = market;
-  deleteOpen.value = true;
 };
 
 const handleFormSubmit = (payload) => {
@@ -105,92 +31,50 @@ const handleFormSubmit = (payload) => {
     addMarket(payload);
   }
 };
-
-const confirmDelete = () => {
-  if (marketToDelete.value) {
-    deleteMarket(marketToDelete.value.id);
-  }
-  deleteOpen.value = false;
-  marketToDelete.value = null;
-};
-
-const viewingStats = computed(() => {
-  if (!viewingMarket.value) return { places: 0, merchants: 0, products: 0 };
-  return getMarketStats(viewingMarket.value.id);
-});
 </script>
 
 <template>
   <div class="space-y-6">
     <PageHeader
-      action-label="Ajouter un marché"
-      :action-icon="Plus"
-      @action="openCreate"
+      title="Le marché"
+      :action-label="market ? 'Modifier la fiche' : 'Créer le marché'"
+      :action-icon="Store"
+      @action="openForm"
     />
-    <FilterBar :show-clear="searchQuery || provinceFilter !== 'all'" @clear="searchQuery = ''; provinceFilter = 'all'">
-      <div class="flex-1 space-y-1 w-full">
-        <label class="text-xs font-medium text-muted-foreground">Recherche</label>
-        <div class="relative">
-          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input v-model="searchQuery" placeholder="Nom, province ou commune..." class="pl-9 bg-card" />
-        </div>
-      </div>
-      <div class="space-y-1 w-full sm:w-48">
-        <label class="text-xs font-medium text-muted-foreground">Province</label>
-        <Select v-model="provinceFilter">
-          <SelectTrigger class="bg-card">
-            <SelectValue placeholder="Toutes les provinces" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les provinces</SelectItem>
-            <SelectItem v-for="province in provinces" :key="province" :value="province">{{ province }}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </FilterBar>
 
-    <MarketsTable
-      :markets="filteredMarkets"
-      @view="openView"
-      @edit="openEdit"
-      @delete="openDelete"
-    />
+    <Card v-if="market">
+      <CardContent class="p-6 space-y-4">
+        <div class="flex flex-col md:flex-row gap-6">
+          <img
+            v-if="market.image"
+            :src="market.image"
+            :alt="market.name"
+            class="w-full md:w-64 h-40 object-cover rounded-xl"
+          />
+          <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">{{ market.name }}</h2>
+            <p class="text-sm text-muted-foreground">{{ getAdministrativeLocationLabel(market) }}</p>
+            <p class="text-sm">{{ market.description || 'Aucune description.' }}</p>
+            <p class="text-sm">
+              {{ placeCount }} emplacement(s) · {{ merchantCount }} commerçant(s) ·
+              {{ market.occupiedPlaces }} occupé(s) / {{ market.totalPlaces }}
+            </p>
+          </div>
+        </div>
+        <Button variant="outline" @click="openForm">Modifier</Button>
+      </CardContent>
+    </Card>
+
+    <Card v-else>
+      <CardContent class="p-6 text-sm text-muted-foreground">
+        Aucun marché n'est encore configuré.
+      </CardContent>
+    </Card>
 
     <MarketFormDialog
       v-model:open="formOpen"
-      :market="editingMarket"
+      :market="market"
       @submit="handleFormSubmit"
     />
-
-    <MarketViewDialog
-      v-model:open="viewOpen"
-      :market="viewingMarket"
-      :places-count="viewingStats.places"
-      :merchants-count="viewingStats.merchants"
-      :products-count="viewingStats.products"
-      @edit="openEdit"
-    />
-
-    <AlertDialog v-model:open="deleteOpen">
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Supprimer ce marché ?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Cette action est irréversible. Le marché
-            <strong>{{ marketToDelete?.name }}</strong>
-            sera retiré du registre. Les marchés avec des emplacements ou produits associés ne peuvent pas être supprimés.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Annuler</AlertDialogCancel>
-          <AlertDialogAction
-            class="bg-destructive text-white hover:bg-destructive/90"
-            @click="confirmDelete"
-          >
-            Supprimer
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
   </div>
 </template>

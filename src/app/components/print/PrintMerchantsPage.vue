@@ -86,13 +86,12 @@ onMounted(() => {
             <th>Email</th>
             <th>Étal</th>
             <th>Filière</th>
-            <th>Produits</th>
             <th>Statut</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="!merchants.length">
-            <td colspan="8" style="text-align:center;color:#9ca3af;padding:2rem">
+            <td colspan="7" style="text-align:center;color:#9ca3af;padding:2rem">
               Aucun commerçant à afficher.
             </td>
           </tr>
@@ -103,7 +102,6 @@ onMounted(() => {
             <td>{{ m.email || '—' }}</td>
             <td>{{ m.activePlaceNumber || m.activePlaceId || '—' }}</td>
             <td>{{ m.category }}</td>
-            <td>{{ m.productsCount ?? '—' }}</td>
             <td>
               <span :class="m.verified ? 'badge-print badge-print--success' : 'badge-print badge-print--warning'">
                 {{ m.verified ? 'Habilité' : 'En attente' }}

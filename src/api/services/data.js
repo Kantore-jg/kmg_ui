@@ -1,24 +1,18 @@
 import { apiClient, extractData, extractList } from '../client.js';
 import {
   mapMarket,
-  mapProductCategory,
-  productCategoryToApi,
   mapBlock,
   mapPlace,
   mapMerchant,
-  mapProduct,
   mapPlaceRequest,
   mapReceipt,
   mapPaymentMethod,
   paymentMethodToApi,
-  mapSale,
   mapUser,
-  saleToApi,
   marketToApi,
   userToApi,
   blockToApi,
   placeToApi,
-  productToApi,
   placeRequestToApi,
 } from '../mappers.js';
 import { getStoredUser } from './auth.js';
@@ -34,15 +28,6 @@ function appendScalar(formData, key, value) {
   formData.append(key, String(value));
 }
 
-function appendArray(formData, key, values) {
-  if (!Array.isArray(values)) return;
-  values.forEach((value, index) => {
-    if (value !== undefined && value !== null && value !== '') {
-      formData.append(`${key}[${index}]`, String(value));
-    }
-  });
-}
-
 function marketToFormData(market) {
   const formData = new FormData();
   const api = marketToApi(market);
@@ -55,31 +40,10 @@ function marketToFormData(market) {
   appendScalar(formData, 'location', api.location);
   appendScalar(formData, 'description', api.description);
   appendScalar(formData, 'total_places', api.total_places);
-  appendArray(formData, 'product_category_ids', api.product_category_ids);
 
   if (market.imageFile) {
     formData.append('image', market.imageFile);
     formData.append('cover_image', market.imageFile);
-  }
-
-  return formData;
-}
-
-function productToFormData(product) {
-  const formData = new FormData();
-  const api = productToApi(product);
-
-  Object.entries(api).forEach(([key, value]) => {
-    if (value === undefined || value === null) return;
-    if (typeof value === 'boolean') {
-      formData.append(key, value ? '1' : '0');
-    } else {
-      formData.append(key, String(value));
-    }
-  });
-
-  if (product.imageFile) {
-    formData.append('images[0]', product.imageFile);
   }
 
   return formData;
@@ -103,30 +67,6 @@ async function fetchScopedList(endpoint, params = {}) {
   }
 
   return pages.flat();
-}
-
-export async function fetchProductCategories() {
-  const { data } = await apiClient.get('/product-categories');
-  return extractList({ data }).map(mapProductCategory);
-}
-
-export async function fetchAllProductCategories() {
-  const { data } = await apiClient.get('/product-categories/manage');
-  return extractList({ data }).map(mapProductCategory);
-}
-
-export async function createProductCategory(category) {
-  const { data } = await apiClient.post('/product-categories', productCategoryToApi(category));
-  return mapProductCategory(extractData({ data }));
-}
-
-export async function updateProductCategoryApi(id, category) {
-  const { data } = await apiClient.put(`/product-categories/${id}`, productCategoryToApi(category));
-  return mapProductCategory(extractData({ data }));
-}
-
-export async function deleteProductCategoryApi(id) {
-  await apiClient.delete(`/product-categories/${id}`);
 }
 
 export async function fetchMarkets() {
@@ -159,36 +99,12 @@ export async function deleteUserApi(id) {
   await apiClient.delete(`/users/${id}`);
 }
 
-export async function fetchProducts(params = {}) {
-  return (await fetchScopedList('/products', params)).map(mapProduct);
-}
-
 const MARKET_OPS_ROLES = ['SUPER_ADMIN', 'ADMIN_MARCHE', 'PROPRIETAIRE_MARCHE'];
-const SALES_LIST_ROLES = ['SUPER_ADMIN', 'ADMIN_MARCHE'];
 
 export async function fetchPlaceRequests(user = getStoredUser()) {
   const isAdmin = MARKET_OPS_ROLES.includes(user?.role);
   const endpoint = isAdmin ? '/place-requests' : '/my/place-requests';
   return (await fetchScopedList(endpoint)).map(mapPlaceRequest);
-}
-
-export async function fetchSales(params = {}, user = getStoredUser()) {
-  if (user?.role === 'PROPRIETAIRE_MARCHE') {
-    return [];
-  }
-  const isAdmin = SALES_LIST_ROLES.includes(user?.role);
-  const endpoint = isAdmin ? '/sales' : '/my/sales';
-  return (await fetchScopedList(endpoint, params)).map(mapSale);
-}
-
-export async function fetchSale(id) {
-  const { data } = await apiClient.get(`/sales/${id}`);
-  return mapSale(extractData({ data }));
-}
-
-export async function createSale(sale) {
-  const { data } = await apiClient.post('/sales', saleToApi(sale));
-  return mapSale(extractData({ data }));
 }
 
 export async function fetchReceipts(user = getStoredUser()) {
@@ -257,30 +173,6 @@ export async function deletePlaceApi(placeId) {
 export async function assignPlaceChief(placeId, userId) {
   const { data } = await apiClient.post(`/places/${placeId}/assign-chief`, { user_id: userId });
   return mapPlace(extractData({ data }));
-}
-
-export async function createProduct(product) {
-  if (product.imageFile) {
-    const { data } = await apiClient.post('/products', productToFormData(product));
-    return mapProduct(extractData({ data }));
-  }
-  const { data } = await apiClient.post('/products', productToApi(product));
-  return mapProduct(extractData({ data }));
-}
-
-export async function updateProductApi(id, product) {
-  if (product.imageFile) {
-    const formData = productToFormData(product);
-    formData.append('_method', 'PUT');
-    const { data } = await apiClient.post(`/products/${id}`, formData);
-    return mapProduct(extractData({ data }));
-  }
-  const { data } = await apiClient.put(`/products/${id}`, productToApi(product));
-  return mapProduct(extractData({ data }));
-}
-
-export async function deleteProductApi(id) {
-  await apiClient.delete(`/products/${id}`);
 }
 
 export async function createPlaceRequest(request) {

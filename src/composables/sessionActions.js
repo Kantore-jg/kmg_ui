@@ -25,7 +25,6 @@ export function createSessionActions({
   currentUser,
   requests,
   receipts,
-  sales,
   showToast,
   refreshInBackground,
   saveUser,
@@ -38,7 +37,7 @@ export function createSessionActions({
     }
 
     currentUser.value = GUEST_USER;
-    clearAuthCollections([requests, receipts, sales]);
+    clearAuthCollections([requests, receipts]);
     saveUser(null);
   };
 

@@ -9,10 +9,8 @@ export function useAdminScope() {
     merchants,
     places,
     blocks,
-    products,
     requests,
     receipts,
-    sales,
     users,
   } = useApp();
 
@@ -64,16 +62,6 @@ export function useAdminScope() {
     return merchants.value;
   });
 
-  const scopedProducts = computed(() => {
-    if (isMerchant.value && assignedMerchantId.value) {
-      return products.value.filter((p) => p.merchantId === assignedMerchantId.value);
-    }
-    if (assignedMarketId.value) {
-      return products.value.filter((p) => p.marketId == assignedMarketId.value);
-    }
-    return products.value;
-  });
-
   const scopedRequests = computed(() =>
     requests.value.filter(
       (r) => !assignedMarketId.value || r.requestedMarketId == assignedMarketId.value,
@@ -97,16 +85,6 @@ export function useAdminScope() {
     scopedRequests.value.filter((r) => r.status === 'pending'),
   );
 
-  const scopedSales = computed(() => {
-    if (isMerchant.value && assignedMerchantId.value) {
-      return sales.value.filter((s) => s.merchantId === assignedMerchantId.value);
-    }
-    if (assignedMarketId.value) {
-      return sales.value.filter((s) => s.marketId == assignedMarketId.value);
-    }
-    return sales.value;
-  });
-
   const scopedPendingReceipts = computed(() =>
     scopedReceipts.value.filter((r) => r.status === 'pending'),
   );
@@ -117,10 +95,6 @@ export function useAdminScope() {
 
   const scopedApprovedReceiptsTotal = computed(() =>
     scopedApprovedReceipts.value.reduce((sum, r) => sum + r.amount, 0),
-  );
-
-  const scopedSalesTotal = computed(() =>
-    scopedSales.value.reduce((sum, sale) => sum + Number(sale.total || 0), 0),
   );
 
   const scopedTotalPlaces = computed(() => scopedPlaces.value.length);
@@ -194,10 +168,8 @@ export function useAdminScope() {
     merchants,
     places,
     blocks,
-    products,
     requests,
     receipts,
-    sales,
     users,
     isSuperAdmin,
     isMarketAdmin,
@@ -210,16 +182,13 @@ export function useAdminScope() {
     scopedPlaces,
     scopedBlocks,
     scopedMerchants,
-    scopedProducts,
     scopedRequests,
     scopedUsers,
     scopedReceipts,
-    scopedSales,
     scopedPendingRequests,
     scopedPendingReceipts,
     scopedApprovedReceipts,
     scopedApprovedReceiptsTotal,
-    scopedSalesTotal,
     scopedTotalPlaces,
     scopedOccupiedPlaces,
     scopedFreePlaces,

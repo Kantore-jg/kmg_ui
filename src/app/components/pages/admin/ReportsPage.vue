@@ -4,9 +4,7 @@ import {
   Download,
   Layers3,
   MapPin,
-  Package,
   Store,
-  ShoppingCart,
   Users,
 } from 'lucide-vue-next';
 import { useApp } from '../../../../composables/useApp.js';
@@ -41,13 +39,11 @@ const {
   scopedMerchants,
   scopedPlaces,
   scopedBlocks,
-  scopedProducts,
-  scopedSales,
   findMarket,
   findMerchant,
 } = useAdminScope();
 
-const activeTab = ref(isMerchant.value ? 'products' : 'markets');
+const activeTab = ref('markets');
 const marketFilter = ref('all');
 const previewLimit = 8;
 
@@ -105,7 +101,6 @@ const marketsRows = computed(() =>
       zone: market.zone || '—',
       colline: market.colline || '—',
       location: market.location || market.administrativeLocation || getAdministrativeLocationLabel(market) || '—',
-      categories: market.productCategories?.length ? market.productCategories.join(', ') : '—',
       totalPlaces: total,
       occupiedPlaces: occupied,
       freePlaces: Math.max(total - occupied, 0),
@@ -123,7 +118,7 @@ const placesRows = computed(() =>
       block: place.blockName || '—',
       row: place.rowName || '—',
       status: place.status || '—',
-      categories: place.categories?.length ? place.categories.join(', ') : place.category || '—',
+      category: place.category || '—',
       merchant: merchant?.name || '—',
       phone: merchant?.phone || '—',
     };
@@ -152,49 +147,7 @@ const merchantsRows = computed(() =>
     market: findMarket(merchant.activeMarketId)?.name || '—',
     place: merchant.activePlaceNumber || merchant.activePlaceId || '—',
     category: merchant.category || '—',
-    productsCount: merchant.productsCount ?? 0,
     verified: merchant.verified ? 'Habilité' : 'En attente',
-  })),
-);
-
-const productsRows = computed(() =>
-  filterByMarket(scopedProducts.value, (product) => product.marketId).map((product) => ({
-    id: product.id,
-    name: product.name,
-    category: product.category || '—',
-    market: findMarket(product.marketId)?.name || '—',
-    merchant: findMerchant(product.merchantId)?.name || '—',
-    place: product.placeNumber || '—',
-    unit: product.unit || '—',
-    price: formatNumber(product.price),
-    stock: product.stock ?? 0,
-    availability: product.available === false ? 'Indisponible' : 'Disponible',
-    trending: product.isTrending ? 'Oui' : 'Non',
-  })),
-);
-
-const salesRows = computed(() =>
-  filterByMarket(scopedSales.value, (sale) => sale.marketId).map((sale) => ({
-    id: sale.id,
-    invoice: sale.invoiceNumber || '—',
-    date: formatDateTime(sale.createdAtFull || sale.createdAt),
-    market: sale.marketName || findMarket(sale.marketId)?.name || '—',
-    merchant: sale.merchantName || '—',
-    client: sale.clientName || '—',
-    payment:
-      sale.paymentType === 'cash'
-        ? 'Espèces'
-        : sale.paymentType === 'electronic'
-          ? 'Électronique'
-          : sale.paymentType === 'credit'
-            ? 'Crédit'
-            : sale.paymentType || '—',
-    subtotal: formatNumber(sale.subtotal),
-    paidAmount: formatNumber(sale.paidAmount || 0),
-    remainingAmount: formatNumber(sale.remainingAmount || 0),
-    total: formatNumber(sale.total),
-    itemsCount: sale.items?.length || 0,
-    place: sale.placeNumber || '—',
   })),
 );
 
@@ -211,51 +164,6 @@ const buildSection = ({ key, label, icon, description, filename, columns, rows }
 });
 
 const reportSections = computed(() => {
-  if (isMerchant.value) {
-    return [
-      buildSection({
-        key: 'products',
-        label: 'Produits',
-        icon: Package,
-        filename: 'rapport-produits',
-        columns: [
-          { key: 'name', label: 'Produit' },
-          { key: 'category', label: 'Catégorie' },
-          { key: 'market', label: 'Marché' },
-          { key: 'merchant', label: 'Commerçant' },
-          { key: 'place', label: 'Étal' },
-          { key: 'unit', label: 'Unité' },
-          { key: 'price', label: 'Prix' },
-          { key: 'stock', label: 'Stock' },
-          { key: 'availability', label: 'Statut' },
-          { key: 'trending', label: 'Tendance' },
-        ],
-        rows: productsRows.value,
-      }),
-      buildSection({
-        key: 'sales',
-        label: 'Ventes',
-        icon: ShoppingCart,
-        filename: 'rapport-ventes',
-        columns: [
-          { key: 'invoice', label: 'Facture' },
-          { key: 'date', label: 'Date' },
-          { key: 'market', label: 'Marché' },
-          { key: 'merchant', label: 'Commerçant' },
-          { key: 'client', label: 'Client' },
-          { key: 'payment', label: 'Paiement' },
-          { key: 'subtotal', label: 'Sous-total' },
-          { key: 'paidAmount', label: 'Payé' },
-          { key: 'remainingAmount', label: 'Reste' },
-          { key: 'total', label: 'Total' },
-          { key: 'itemsCount', label: 'Articles' },
-          { key: 'place', label: 'Étal' },
-        ],
-        rows: salesRows.value,
-      }),
-    ];
-  }
-
   return [
     buildSection({
       key: 'markets',
@@ -268,7 +176,6 @@ const reportSections = computed(() => {
         { key: 'commune', label: 'Commune' },
         { key: 'zone', label: 'Zone' },
         { key: 'colline', label: 'Colline' },
-        { key: 'categories', label: 'Catégories' },
         { key: 'totalPlaces', label: 'Places total' },
         { key: 'occupiedPlaces', label: 'Occupées' },
         { key: 'freePlaces', label: 'Libres' },
@@ -285,7 +192,7 @@ const reportSections = computed(() => {
         { key: 'market', label: 'Marché' },
         { key: 'block', label: 'Bloc' },
         { key: 'row', label: 'Emplacement' },
-        { key: 'categories', label: 'Filière' },
+        { key: 'category', label: 'Filière' },
         { key: 'merchant', label: 'Commerçant' },
         { key: 'phone', label: 'Téléphone' },
         { key: 'status', label: 'Statut' },
@@ -320,7 +227,6 @@ const reportSections = computed(() => {
         { key: 'market', label: 'Marché' },
         { key: 'place', label: 'Étal' },
         { key: 'category', label: 'Filière' },
-        { key: 'productsCount', label: 'Produits' },
         { key: 'verified', label: 'Habilitation' },
       ],
       rows: merchantsRows.value,

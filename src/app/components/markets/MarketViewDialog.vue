@@ -1,9 +1,8 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { MapPin, Store, Users, Package } from 'lucide-vue-next';
+import { MapPin, Store, Users } from 'lucide-vue-next';
 import Button from '../ui/Button.vue';
-import Badge from '../ui/Badge.vue';
 import { getAdministrativeLocationLabel } from '../../../utils/burundiLocations.js';
 import {
   Dialog,
@@ -19,7 +18,6 @@ const props = defineProps({
   market: { type: Object, default: null },
   placesCount: { type: Number, default: 0 },
   merchantsCount: { type: Number, default: 0 },
-  productsCount: { type: Number, default: 0 },
 });
 
 const emit = defineEmits(['update:open', 'edit']);
@@ -59,7 +57,7 @@ const goToPlaces = () => {
 
         <p class="text-sm text-muted-foreground leading-relaxed">{{ market.description }}</p>
 
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-2 gap-3">
           <div class="p-3 rounded-lg border border-border bg-muted/30 text-center">
             <Store class="w-4 h-4 mx-auto text-primary mb-1" />
             <p class="text-lg font-semibold">{{ market.occupiedPlaces }}/{{ market.totalPlaces }}</p>
@@ -70,17 +68,6 @@ const goToPlaces = () => {
             <p class="text-lg font-semibold">{{ merchantsCount }}</p>
             <p class="text-xs text-muted-foreground">Commerçants</p>
           </div>
-          <div class="p-3 rounded-lg border border-border bg-muted/30 text-center">
-            <Package class="w-4 h-4 mx-auto text-primary mb-1" />
-            <p class="text-lg font-semibold">{{ productsCount }}</p>
-            <p class="text-xs text-muted-foreground">Produits</p>
-          </div>
-        </div>
-
-        <div v-if="market.productCategories?.length" class="flex flex-wrap gap-2">
-          <Badge v-for="category in market.productCategories" :key="category" variant="secondary">
-            {{ category }}
-          </Badge>
         </div>
       </div>
 

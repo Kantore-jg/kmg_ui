@@ -93,20 +93,6 @@ const handleSubmit = () => {
       </DialogHeader>
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div class="space-y-2">
-          <Label>Marché</Label>
-          <Select v-model="form.marketId" :disabled="isEditing">
-            <SelectTrigger>
-              <SelectValue placeholder="Choisir un marché" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="m in markets" :key="m.id" :value="m.id">
-                {{ m.name }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
         <div class="grid grid-cols-2 gap-3">
           <div class="space-y-2">
             <Label for="block-name">Nom du bloc</Label>

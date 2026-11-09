@@ -105,8 +105,7 @@ const filteredPlaces = computed(() =>
       !q ||
       p.id.toLowerCase().includes(q) ||
       p.blockName.toLowerCase().includes(q) ||
-      p.category?.toLowerCase().includes(q) ||
-      p.categories?.some((c) => c.toLowerCase().includes(q));
+      p.category?.toLowerCase().includes(q);
     const matchesMarket = marketFilter.value === 'all' || p.marketId === marketFilter.value;
     const matchesStatus = statusFilter.value === 'all' || p.status === statusFilter.value;
     return matchesQuery && matchesMarket && matchesStatus;
@@ -283,17 +282,6 @@ const onCreateBlockFromPlace = (marketId) => {
               class="pl-9"
             />
           </div>
-          <Select v-model="marketFilter">
-            <SelectTrigger class="w-full lg:w-52">
-              <SelectValue placeholder="Tous les marchés" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les marchés</SelectItem>
-              <SelectItem v-for="m in scopedMarkets" :key="m.id" :value="m.id">
-                {{ m.name }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
           <Select v-if="activeTab === 'places'" v-model="statusFilter">
             <SelectTrigger class="w-full lg:w-44">
               <SelectValue placeholder="Tous statuts" />

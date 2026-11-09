@@ -1,17 +1,13 @@
 <script setup>
-import { computed, ref } from 'vue';
-import { ArrowLeft, MessageCircle, Phone, Sparkles } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { ArrowLeft, MessageCircle, Phone } from 'lucide-vue-next';
 import { useApp } from '../composables/useApp.js';
 import { usePublicNavigation } from '../composables/usePublicNavigation.js';
 import { sameId } from '../utils/ids.js';
 import { getAdministrativeLocationLabel } from '../utils/burundiLocations.js';
-import PublicProductCard from './PublicProductCard.vue';
 
-const { merchants, markets, products, selectedMerchantId, showToast } = useApp();
-const { goToMerchantsList, goToProduct } = usePublicNavigation();
-
-const searchQuery = ref('');
-const categoryFilter = ref('all');
+const { merchants, markets, selectedMerchantId, showToast } = useApp();
+const { goToMerchantsList } = usePublicNavigation();
 
 const merchant = computed(() =>
   merchants.value.find((item) => sameId(item.id, selectedMerchantId.value)),
@@ -23,41 +19,6 @@ const merchantMarket = computed(() => {
     || markets.value.find((market) => sameId(market.id, merchant.value.marketId))
     || null;
 });
-
-const merchantProducts = computed(() => {
-  if (!merchant.value) return [];
-
-  const items = products.value.filter((product) =>
-    sameId(product.merchantId, merchant.value.id)
-    || (merchant.value.activePlaceId && sameId(product.placeId, merchant.value.activePlaceId)),
-  );
-
-  return [...items].sort((a, b) => {
-    const aPinned = sameId(a.placeId, merchant.value.activePlaceId);
-    const bPinned = sameId(b.placeId, merchant.value.activePlaceId);
-    if (aPinned !== bPinned) return aPinned ? -1 : 1;
-    return a.name.localeCompare(b.name, 'fr');
-  });
-});
-
-const categories = computed(() => {
-  const set = new Set(merchantProducts.value.map((product) => product.category).filter(Boolean));
-  return Array.from(set).sort((a, b) => a.localeCompare(b, 'fr'));
-});
-
-const filteredProducts = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  return merchantProducts.value.filter((product) => {
-    const matchesQuery =
-      !query
-      || product.name.toLowerCase().includes(query)
-      || product.category.toLowerCase().includes(query);
-    const matchesCategory = categoryFilter.value === 'all' || product.category === categoryFilter.value;
-    return matchesQuery && matchesCategory;
-  });
-});
-
-const featuredProducts = computed(() => filteredProducts.value.slice(0, 4));
 
 const backLabel = computed(() =>
   merchantMarket.value ? getAdministrativeLocationLabel(merchantMarket.value) : 'Marché public',
@@ -94,50 +55,20 @@ function contactWhatsapp() {
       Retour aux commerçants
     </button>
 
-    
-    <section class="space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        <div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-            Produits de {{ merchant.name }}
-          </h2>
-          <p class="text-sm text-slate-500">
-            Les produits visibles ci-dessous proviennent de son étal ou de son affectation.
-          </p>
-        </div>
-
-        <div class="flex flex-wrap gap-2">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Rechercher un produit..."
-            class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-primary/40"
-          />
-          <select
-            v-model="categoryFilter"
-            class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium outline-none focus:border-primary/40"
-          >
-            <option value="all">Toutes les catégories</option>
-            <option v-for="category in categories" :key="category" :value="category">
-              {{ category }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div v-if="!filteredProducts.length" class="rounded-3xl border border-dashed border-slate-200 bg-white p-10 text-center text-sm text-slate-500">
-        Aucun produit ne correspond à votre recherche.
-      </div>
-
-      <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-        <PublicProductCard
-          v-for="product in filteredProducts"
-          :key="product.id"
-          :product="product"
-          :market-name="merchantMarket?.name || '—'"
-          :on-select-product="goToProduct"
-        />
-      </div>
+    <section class="bg-white rounded-3xl border border-slate-100 p-6 space-y-3">
+      <h1 class="text-3xl font-extrabold text-slate-900">{{ merchant.name }}</h1>
+      <p class="text-sm text-slate-500">{{ backLabel }}</p>
+      <p v-if="merchant.category" class="text-sm font-medium">{{ merchant.category }}</p>
+      <p v-if="merchant.activePlaceNumber" class="text-sm">Étal {{ merchant.activePlaceNumber }}</p>
+      <button
+        type="button"
+        class="inline-flex items-center gap-2 bg-primary text-slate-950 font-bold px-4 py-2 rounded-xl text-sm"
+        @click="contactWhatsapp"
+      >
+        <MessageCircle class="w-4 h-4" />
+        <Phone class="w-4 h-4" />
+        Contacter
+      </button>
     </section>
   </div>
 </template>

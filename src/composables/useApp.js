@@ -14,13 +14,10 @@ const APP_KEY = Symbol('app');
 export function createAppState() {
   const markets = ref([]);
   const merchants = ref([]);
-  const products = ref([]);
   const places = ref([]);
   const blocks = ref([]);
-  const productCategories = ref([]);
   const requests = ref([]);
   const receipts = ref([]);
-  const sales = ref([]);
   const users = ref([]);
   const currentUser = ref(getStoredUser() || GUEST_USER);
   const loading = ref(false);
@@ -30,7 +27,6 @@ export function createAppState() {
 
   const viewState = ref('PUBLIC');
   const selectedMarketId = ref(null);
-  const selectedProductId = ref(null);
   const selectedMerchantId = ref(null);
   const publicTab = ref('home');
   const adminActiveTab = ref('dashboard');
@@ -48,11 +44,9 @@ export function createAppState() {
     currentUser.value = GUEST_USER;
     requests.value = [];
     receipts.value = [];
-    sales.value = [];
     users.value = [];
     usersLoading.value = false;
     selectedMarketId.value = null;
-    selectedProductId.value = null;
     selectedMerchantId.value = null;
     publicTab.value = 'home';
     adminActiveTab.value = 'dashboard';
@@ -75,7 +69,6 @@ export function createAppState() {
       adminActiveTab.value = 'dashboard';
     } else {
       selectedMarketId.value = null;
-      selectedProductId.value = null;
     }
   };
 
@@ -97,7 +90,6 @@ export function createAppState() {
         } else {
           requests.value = [];
           receipts.value = [];
-          sales.value = [];
         }
       } catch (error) {
         showToast(getErrorMessage(error, 'Erreur de chargement des données'), 'error');
@@ -140,13 +132,10 @@ export function createAppState() {
   const dataActions = createDataActions({
     markets,
     merchants,
-    products,
     places,
     blocks,
-    productCategories,
     requests,
     receipts,
-    sales,
     users,
     currentUser,
     usersLoading,
@@ -173,7 +162,6 @@ export function createAppState() {
     currentUser,
     requests,
     receipts,
-    sales,
     showToast,
     refreshInBackground,
     saveUser,
@@ -184,22 +172,12 @@ export function createAppState() {
     loadUsers,
     loadBlocks,
     addPlaceRequest,
-    loadSales,
-    getSale,
-    addSale,
     addPaymentReceipt,
     updateRequestStatus,
     updateReceiptStatus,
-    addProduct,
-    updateProduct,
-    deleteProduct,
     addMarket,
     updateMarket,
     deleteMarket,
-    loadProductCategories,
-    addProductCategory,
-    updateProductCategory,
-    deleteProductCategory,
     addBlock,
     updateBlock,
     deleteBlock,
@@ -237,13 +215,10 @@ export function createAppState() {
   return {
     markets,
     merchants,
-    products,
     places,
     blocks,
-    productCategories,
     requests,
     receipts,
-    sales,
     users,
     currentUser,
     loading,
@@ -251,7 +226,6 @@ export function createAppState() {
     initialized,
     viewState,
     selectedMarketId,
-    selectedProductId,
     selectedMerchantId,
     publicTab,
     adminActiveTab,
@@ -269,33 +243,22 @@ export function createAppState() {
     setCurrentUser,
     setViewState,
     setSelectedMarketId: (id) => { selectedMarketId.value = id; },
-    setSelectedProductId: (id) => { selectedProductId.value = id; },
     setSelectedMerchantId: (id) => { selectedMerchantId.value = id; },
     setPublicTab: (tab) => { publicTab.value = tab; },
     setAdminActiveTab: (tab) => { adminActiveTab.value = tab; },
     addPlaceRequest,
     addPaymentReceipt,
-    loadSales,
-    getSale,
-    addSale,
     updateRequestStatus,
     updateReceiptStatus,
     addMarket,
     updateMarket,
     deleteMarket,
-    loadProductCategories,
-    addProductCategory,
-    updateProductCategory,
-    deleteProductCategory,
     addBlock,
     updateBlock,
     deleteBlock,
     addPlace,
     updatePlace,
     deletePlace,
-    addProduct,
-    updateProduct,
-    deleteProduct,
     updatePlaceStatus,
     addUser,
     updateUser,

@@ -6,12 +6,7 @@ import { usePublicNavigation } from '../composables/usePublicNavigation.js';
 import { sameId } from '../utils/ids.js';
 import Navigation from './Navigation.vue';
 import PublicHome from './PublicHome.vue';
-import PublicMarketsList from './PublicMarketsList.vue';
-import PublicMarketDetail from './PublicMarketDetail.vue';
-import PublicProductDetails from './PublicProductDetails.vue';
 import PublicRequestPlace from './PublicRequestPlace.vue';
-import PublicPriceTrends from './PublicPriceTrends.vue';
-import PublicProductsSection from './PublicProductsSection.vue';
 import PublicMerchantsSection from './PublicMerchantsSection.vue';
 import PublicMerchantProfile from './PublicMerchantProfile.vue';
 import PublicFooter from './PublicFooter.vue';
@@ -21,53 +16,24 @@ const route = useRoute();
 const {
   publicTab,
   setPublicTab,
-  selectedMarketId,
-  selectedProductId,
   selectedMerchantId,
-  setSelectedProductId,
-  setSelectedMarketId,
   setSelectedMerchantId,
-  products,
-  markets,
   merchants,
-  productCategories,
+  markets,
   toast,
-  initialized,
   ensurePublicSupplementalData,
 } = useApp();
 
-const { goToProduct, goToMerchant, goToTab, goHome } = usePublicNavigation();
+const { goToMerchant, goToTab, goHome } = usePublicNavigation();
 
 const tabFromRoute = computed(() => route.meta.tab || 'home');
-const tabsNeedingSupplementalData = new Set([
-  'home',
-  'markets',
-  'products',
-  'merchants',
-  'request',
-]);
+const tabsNeedingSupplementalData = new Set(['home', 'merchants', 'request']);
 
 watch(
-  () => [route.path, route.params.marketId, route.params.productId, tabFromRoute.value],
+  () => [route.path, route.params.merchantId, tabFromRoute.value],
   () => {
     const tab = tabFromRoute.value;
     if (publicTab.value !== tab) setPublicTab(tab);
-
-    if (route.params.marketId) {
-      if (selectedMarketId.value !== route.params.marketId) {
-        setSelectedMarketId(route.params.marketId);
-      }
-    } else if (route.name === 'Markets') {
-      if (selectedMarketId.value != null) setSelectedMarketId(null);
-    }
-
-    if (route.params.productId) {
-      if (selectedProductId.value !== route.params.productId) {
-        setSelectedProductId(route.params.productId);
-      }
-    } else if (route.name === 'Products') {
-      if (selectedProductId.value != null) setSelectedProductId(null);
-    }
 
     if (route.params.merchantId) {
       if (!sameId(selectedMerchantId.value, route.params.merchantId)) {
@@ -103,29 +69,7 @@ onMounted(() => {
 
     <main class="flex-1">
       <ProfilePage v-if="publicTab === 'profile'" />
-
       <PublicHome v-else-if="publicTab === 'home'" />
-
-      <template v-else-if="publicTab === 'markets'">
-        <div v-if="!initialized" class="py-20 text-center text-muted-foreground text-sm">
-          Chargement des marchés...
-        </div>
-        <PublicMarketDetail v-else-if="selectedMarketId" />
-        <PublicMarketsList v-else />
-      </template>
-
-      <template v-else-if="publicTab === 'products'">
-        <PublicProductDetails v-if="selectedProductId" />
-        <PublicProductsSection
-          v-else
-          :products="products"
-          :markets="markets"
-          :product-categories="productCategories"
-          :on-select-product="goToProduct"
-        />
-      </template>
-
-      <PublicPriceTrends v-else-if="publicTab === 'price-trends'" />
 
       <template v-else-if="publicTab === 'merchants'">
         <PublicMerchantProfile v-if="selectedMerchantId" />
@@ -133,7 +77,6 @@ onMounted(() => {
           v-else
           :merchants="merchants"
           :markets="markets"
-          :product-categories="productCategories"
           :on-select-merchant="goToMerchant"
         />
       </template>

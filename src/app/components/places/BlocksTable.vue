@@ -34,7 +34,6 @@ const emit = defineEmits(['edit', 'delete', 'add-place']);
       <TableHeader>
         <TableRow>
           <TableHead>Bloc</TableHead>
-          <TableHead>Marché</TableHead>
           <TableHead>Code</TableHead>
           <TableHead>Loyer</TableHead>
           <TableHead>Étals</TableHead>
@@ -44,7 +43,7 @@ const emit = defineEmits(['edit', 'delete', 'add-place']);
       </TableHeader>
       <TableBody>
         <TableRow v-if="!blocks.length">
-          <TableCell :colspan="readonly ? 6 : 7" class="text-center py-8 text-muted-foreground">
+          <TableCell :colspan="readonly ? 5 : 6" class="text-center py-8 text-muted-foreground">
             Aucun bloc configuré. Créez un bloc pour organiser les emplacements.
           </TableCell>
         </TableRow>
@@ -62,7 +61,6 @@ const emit = defineEmits(['edit', 'delete', 'add-place']);
               </div>
             </div>
           </TableCell>
-          <TableCell class="text-sm">{{ getMarketName(block.marketId) }}</TableCell>
           <TableCell class="text-sm text-muted-foreground">{{ block.code || '—' }}</TableCell>
           <TableCell class="text-sm font-medium">
             {{ Number(block.rentAmount || 0).toLocaleString('fr-FR') }} BIF

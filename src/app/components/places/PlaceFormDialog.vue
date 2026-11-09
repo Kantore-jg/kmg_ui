@@ -1,17 +1,12 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { categoriesForMarket } from '../../../utils/categories.js';
-import ProductCategoryMultiSelect from '../markets/ProductCategoryMultiSelect.vue';
 import Button from '../ui/Button.vue';
 import Input from '../ui/Input.vue';
 import Label from '../ui/Label.vue';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
-  DialogHeader,
-  DialogTitle,
 } from '../ui/dialog';
 import {
   Select,
@@ -36,21 +31,13 @@ const form = ref({
   id: '',
   marketId: '',
   blockId: '',
-  productCategoryIds: [],
+  category: '',
 });
 
 const isEditing = computed(() => Boolean(props.place?.placeId));
 
 const blocksForMarket = computed(() =>
   props.blocks.filter((b) => String(b.marketId) === String(form.value.marketId)),
-);
-
-const selectedMarket = computed(() =>
-  props.markets.find((m) => String(m.id) === String(form.value.marketId)) || null,
-);
-
-const availableCategories = computed(() =>
-  categoriesForMarket(selectedMarket.value),
 );
 
 watch(
@@ -62,7 +49,7 @@ watch(
         id: props.place.id || '',
         marketId: props.place.marketId || props.defaultMarketId || props.markets[0]?.id || '',
         blockId: props.place.blockId ? String(props.place.blockId) : props.defaultBlockId ? String(props.defaultBlockId) : '',
-        productCategoryIds: [...(props.place.categoryIds || [])],
+        category: props.place.category || '',
       };
       return;
     }
@@ -70,7 +57,7 @@ watch(
       id: '',
       marketId: props.defaultMarketId || props.markets[0]?.id || '',
       blockId: props.defaultBlockId ? String(props.defaultBlockId) : '',
-      productCategoryIds: [],
+      category: '',
     };
   },
 );
@@ -86,11 +73,6 @@ watch(
         ? String(blocksForMarket.value[0].id)
         : '';
     }
-
-    const allowed = new Set(availableCategories.value.map((c) => String(c.id)));
-    form.value.productCategoryIds = form.value.productCategoryIds.filter((id) =>
-      allowed.has(String(id)),
-    );
   },
 );
 
@@ -98,14 +80,13 @@ const close = () => emit('update:open', false);
 
 const handleSubmit = () => {
   if (!form.value.id.trim() || !form.value.marketId || !form.value.blockId) return;
-  if (!form.value.productCategoryIds.length) return;
 
   emit('submit', {
     ...(props.place || {}),
     id: form.value.id.trim(),
     marketId: form.value.marketId,
     blockId: Number(form.value.blockId) || form.value.blockId,
-    productCategoryIds: form.value.productCategoryIds,
+    category: form.value.category.trim() || null,
   });
   close();
 };
@@ -124,20 +105,6 @@ const handleSubmit = () => {
             placeholder="ex. A-04"
             required
         />
-        </div>
-
-        <div class="space-y-2">
-          <Label>Marché</Label>
-          <Select v-model="form.marketId">
-            <SelectTrigger>
-              <SelectValue placeholder="Choisir un marché" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="m in markets" :key="m.id" :value="m.id">
-                {{ m.name }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         <div class="space-y-2">
@@ -171,24 +138,19 @@ const handleSubmit = () => {
         </div>
 
         <div class="space-y-2">
-          <Label>Catégories d'activité</Label>
-          <ProductCategoryMultiSelect
-            v-model="form.productCategoryIds"
-            :options="availableCategories"
-            placeholder="Choisir catégories..."
-            :disabled="!availableCategories.length"
+          <Label for="place-category">Activité (optionnel)</Label>
+          <Input
+            id="place-category"
+            v-model="form.category"
+            placeholder="ex. Vivres, Textiles..."
           />
-          <p v-if="!availableCategories.length" class="text-xs text-muted-foreground">
-            Aucune catégorie configurée pour ce marché.
-          </p>
-          
         </div>
 
         <DialogFooter>
           <Button type="button" variant="outline" @click="close">Annuler</Button>
           <Button
             type="submit"
-            :disabled="!form.blockId || !form.productCategoryIds.length || !availableCategories.length"
+            :disabled="!form.blockId"
           >
             {{ isEditing ? 'Mettre à jour' : 'Créer' }}
           </Button>
