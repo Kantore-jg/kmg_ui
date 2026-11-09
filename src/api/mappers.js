@@ -251,6 +251,7 @@ export function placeToApi(data) {
 export function placeRequestToApi(data) {
   return {
     market_id: data.requestedMarketId,
+    place_id: data.placeId || null,
     merchant_name: data.merchantName,
     merchant_phone: data.merchantPhone,
     category: data.activityType || data.category || null,
