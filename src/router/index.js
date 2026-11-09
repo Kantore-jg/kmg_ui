@@ -123,7 +123,7 @@ const routes = [
       { path: 'products/:productId', redirect: '/' },
       { path: 'price-trends', redirect: '/' },
       { path: 'merchants', name: 'Merchants', meta: { tab: 'merchants' } },
-      { path: 'merchants/:merchantId', name: 'MerchantDetail', meta: { tab: 'merchants' } },
+      { path: 'merchants/:merchantId', redirect: '/merchants' },
       { path: 'request', name: 'Request', meta: { tab: 'request' } },
       {
         path: 'profile',

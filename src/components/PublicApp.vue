@@ -3,12 +3,10 @@ import { computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useApp } from '../composables/useApp.js';
 import { usePublicNavigation } from '../composables/usePublicNavigation.js';
-import { sameId } from '../utils/ids.js';
 import Navigation from './Navigation.vue';
 import PublicHome from './PublicHome.vue';
 import PublicRequestPlace from './PublicRequestPlace.vue';
 import PublicMerchantsSection from './PublicMerchantsSection.vue';
-import PublicMerchantProfile from './PublicMerchantProfile.vue';
 import PublicFooter from './PublicFooter.vue';
 import ProfilePage from './ProfilePage.vue';
 
@@ -16,32 +14,22 @@ const route = useRoute();
 const {
   publicTab,
   setPublicTab,
-  selectedMerchantId,
-  setSelectedMerchantId,
   merchants,
   markets,
   toast,
   ensurePublicSupplementalData,
 } = useApp();
 
-const { goToMerchant, goToTab, goHome } = usePublicNavigation();
+const { goToTab, goHome } = usePublicNavigation();
 
 const tabFromRoute = computed(() => route.meta.tab || 'home');
 const tabsNeedingSupplementalData = new Set(['home', 'merchants', 'request']);
 
 watch(
-  () => [route.path, route.params.merchantId, tabFromRoute.value],
+  () => [route.path, tabFromRoute.value],
   () => {
     const tab = tabFromRoute.value;
     if (publicTab.value !== tab) setPublicTab(tab);
-
-    if (route.params.merchantId) {
-      if (!sameId(selectedMerchantId.value, route.params.merchantId)) {
-        setSelectedMerchantId(route.params.merchantId);
-      }
-    } else if (route.name === 'Merchants') {
-      if (selectedMerchantId.value != null) setSelectedMerchantId(null);
-    }
   },
   { immediate: true },
 );
@@ -71,15 +59,11 @@ onMounted(() => {
       <ProfilePage v-if="publicTab === 'profile'" />
       <PublicHome v-else-if="publicTab === 'home'" />
 
-      <template v-else-if="publicTab === 'merchants'">
-        <PublicMerchantProfile v-if="selectedMerchantId" />
-        <PublicMerchantsSection
-          v-else
-          :merchants="merchants"
-          :markets="markets"
-          :on-select-merchant="goToMerchant"
-        />
-      </template>
+      <PublicMerchantsSection
+        v-else-if="publicTab === 'merchants'"
+        :merchants="merchants"
+        :markets="markets"
+      />
 
       <PublicRequestPlace v-else-if="publicTab === 'request'" />
     </main>

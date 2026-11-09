@@ -51,19 +51,11 @@ export function usePublicNavigation() {
     router.push('/merchants');
   };
 
-  const goToMerchant = (merchantId) => {
-    if (merchantId == null) return goToMerchantsList();
-    setSelectedMerchantId(merchantId);
-    setPublicTab('merchants');
-    router.push(`/merchants/${toIdString(merchantId)}`);
-  };
-
   return {
     goHome,
     goToTab,
     goToMarketsList,
     goToMarket,
     goToMerchantsList,
-    goToMerchant,
   };
 }

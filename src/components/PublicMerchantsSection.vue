@@ -1,14 +1,16 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { MessageCircle } from 'lucide-vue-next';
 import { sameId } from '../utils/ids.js';
 import { getAdministrativeLocationLabel } from '../utils/burundiLocations.js';
+import { useApp } from '../composables/useApp.js';
 
 const props = defineProps({
   merchants: { type: Array, default: () => [] },
   markets: { type: Array, default: () => [] },
-  onSelectMerchant: { type: Function, required: true },
 });
 
+const { showToast } = useApp();
 const merchantQuery = ref('');
 
 const getMarketById = (marketId) => props.markets.find((market) => sameId(market.id, marketId));
@@ -46,6 +48,16 @@ function formatDate(value) {
     minute: '2-digit',
     second: '2-digit',
   }).replace(/\//g, '-');
+}
+
+function contactWhatsapp(merchant) {
+  if (!merchant?.phone) {
+    showToast('Ce commerçant n\'a pas de numéro disponible.', 'info');
+    return;
+  }
+
+  const phone = String(merchant.phone).replace(/\s+/g, '');
+  window.open(`https://wa.me/${phone}`, '_blank', 'noreferrer');
 }
 </script>
 
@@ -117,10 +129,11 @@ function formatDate(value) {
                 <td class="px-3 py-3 text-right">
                   <button
                     type="button"
-                    class="inline-flex h-8 items-center rounded-sm bg-sky-500 px-3 text-xs font-semibold text-white transition-colors hover:bg-sky-600"
-                    @click="onSelectMerchant(merchant.id)"
+                    class="inline-flex h-8 items-center gap-1.5 rounded-sm bg-emerald-600 px-3 text-xs font-semibold text-white transition-colors hover:bg-emerald-700"
+                    @click="contactWhatsapp(merchant)"
                   >
-                    Voir
+                    <MessageCircle class="h-3.5 w-3.5" />
+                    Contacter
                   </button>
                 </td>
               </tr>
