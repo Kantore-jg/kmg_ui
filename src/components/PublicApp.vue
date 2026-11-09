@@ -2,12 +2,10 @@
 import { computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useApp } from '../composables/useApp.js';
-import { usePublicNavigation } from '../composables/usePublicNavigation.js';
 import Navigation from './Navigation.vue';
 import PublicHome from './PublicHome.vue';
 import PublicRequestPlace from './PublicRequestPlace.vue';
 import PublicMerchantsSection from './PublicMerchantsSection.vue';
-import PublicFooter from './PublicFooter.vue';
 import ProfilePage from './ProfilePage.vue';
 
 const route = useRoute();
@@ -19,8 +17,6 @@ const {
   toast,
   ensurePublicSupplementalData,
 } = useApp();
-
-const { goToTab, goHome } = usePublicNavigation();
 
 const tabFromRoute = computed(() => route.meta.tab || 'home');
 const tabsNeedingSupplementalData = new Set(['home', 'merchants', 'request']);
@@ -52,7 +48,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-background flex flex-col justify-between text-foreground">
+  <div class="min-h-screen bg-background flex flex-col text-foreground">
     <Navigation />
 
     <main class="flex-1">
@@ -67,8 +63,6 @@ onMounted(() => {
 
       <PublicRequestPlace v-else-if="publicTab === 'request'" />
     </main>
-
-    <PublicFooter :on-go-home="goHome" :on-go-to-tab="goToTab" />
 
     <div
       v-if="toast"
