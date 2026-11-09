@@ -1,89 +1,76 @@
 <script setup>
-import { Eye, MoreHorizontal, ShieldCheck } from 'lucide-vue-next';
-import Badge from '../ui/Badge.vue';
-import Button from '../ui/Button.vue';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-
 defineProps({
   merchants: { type: Array, required: true },
   getMarketLabel: { type: Function, required: true },
 });
 
-const emit = defineEmits(['view']);
+const emit = defineEmits(['edit']);
+
+function formatDate(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('fr-FR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).replace(/\//g, '-');
+}
 </script>
 
 <template>
-  <div class="rounded-lg border border-border bg-card">
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Commerçant</TableHead>
-          <TableHead>Téléphone</TableHead>
-          <TableHead>Marché & étal</TableHead>
-          <TableHead>Filière</TableHead>
-          <TableHead>Statut</TableHead>
-          <TableHead class="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        <TableRow v-if="!merchants.length">
-          <TableCell colspan="6" class="text-center py-8 text-muted-foreground">
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[720px] border-collapse text-sm">
+      <thead>
+        <tr class="border-b border-slate-200 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+          <th class="px-3 py-3 w-10">#</th>
+          <th class="px-3 py-3">Numéro</th>
+          <th class="px-3 py-3">Nom</th>
+          <th class="px-3 py-3">Téléphone</th>
+          <th class="px-3 py-3">Étal</th>
+          <th class="px-3 py-3">Marché</th>
+          <th class="px-3 py-3">Date</th>
+          <th class="px-3 py-3 text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-if="!merchants.length">
+          <td colspan="8" class="px-3 py-10 text-center text-slate-400">
             Aucun commerçant trouvé.
-          </TableCell>
-        </TableRow>
-        <TableRow v-for="merchant in merchants" :key="merchant.id">
-          <TableCell>
-            <div class="flex items-center gap-3">
-              <img :src="merchant.image" class="w-9 h-9 rounded-lg object-cover" />
-              <span class="font-medium text-sm">{{ merchant.name }}</span>
-            </div>
-          </TableCell>
-          <TableCell class="text-sm">{{ merchant.phone }}</TableCell>
-          <TableCell class="text-sm">
+          </td>
+        </tr>
+        <tr
+          v-for="(merchant, index) in merchants"
+          :key="merchant.id"
+          class="border-b border-slate-100 hover:bg-slate-50/80"
+        >
+          <td class="px-3 py-3 text-slate-500">{{ index + 1 }}</td>
+          <td class="px-3 py-3 font-medium text-slate-700">{{ merchant.id }}</td>
+          <td class="px-3 py-3 font-medium text-slate-800">{{ merchant.name }}</td>
+          <td class="px-3 py-3 text-slate-700">{{ merchant.phone || '—' }}</td>
+          <td class="px-3 py-3 text-slate-700">
+            {{ merchant.activePlaceNumber || merchant.activePlaceId || '—' }}
+          </td>
+          <td class="px-3 py-3 text-slate-700">
             {{ getMarketLabel(merchant.activeMarketId) }}
-            <span class="text-muted-foreground"> · {{ merchant.activePlaceNumber || merchant.activePlaceId }}</span>
-          </TableCell>
-          <TableCell>{{ merchant.category }}</TableCell>
-          <TableCell>
-            <Badge :variant="merchant.verified ? 'default' : 'secondary'">
-              <ShieldCheck class="w-3 h-3 mr-1" />
-              {{ merchant.verified ? 'Habilité' : 'En attente' }}
-            </Badge>
-          </TableCell>
-          <TableCell class="text-right">
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal class="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem @click="emit('view', merchant)">
-                  <Eye class="w-4 h-4 mr-2" />
-                  Voir le profil
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
+          </td>
+          <td class="px-3 py-3 whitespace-nowrap text-slate-600">
+            {{ formatDate(merchant.joinedDate) }}
+          </td>
+          <td class="px-3 py-3 text-right">
+            <button
+              type="button"
+              class="inline-flex h-8 items-center rounded-sm bg-sky-500 px-3 text-xs font-semibold text-white transition-colors hover:bg-sky-600"
+              @click="emit('edit', merchant)"
+            >
+              Modifier
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>

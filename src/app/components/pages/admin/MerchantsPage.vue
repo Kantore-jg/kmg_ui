@@ -1,84 +1,122 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Search } from 'lucide-vue-next';
+import { useApp } from '../../../../composables/useApp.js';
 import { useAdminScope } from '../../../../composables/useAdminScope.js';
-import { usePrintReport } from '../../../../composables/usePrintReport.js';
-import { getAdministrativeLocationLabel } from '../../../../utils/burundiLocations.js';
-import FilterBar from '../../layout/FilterBar.vue';
 import MerchantsTable from '../../merchants/MerchantsTable.vue';
 import MerchantViewDialog from '../../merchants/MerchantViewDialog.vue';
-import Input from '../../ui/Input.vue';
+import UserFormDialog from '../../users/UserFormDialog.vue';
 
+const { addUser, refreshAll } = useApp();
 const {
   scopedMerchants,
   findMarket,
-  assignedMarketId,
+  isSuperAdmin,
+  isMarketAdmin,
 } = useAdminScope();
 
-const { openMerchantsPrint } = usePrintReport();
-
 const searchQuery = ref('');
-const marketFilter = ref('all');
 const viewOpen = ref(false);
+const formOpen = ref(false);
 const viewingMerchant = ref(null);
+const createDraft = ref({ role: 'COMMERCANT' });
+
+const canAddMerchant = computed(() => isSuperAdmin.value || isMarketAdmin.value);
 
 const filteredMerchants = computed(() =>
   scopedMerchants.value.filter((m) => {
-    const q = searchQuery.value.toLowerCase();
-    const matchesQuery =
-      !q ||
-      m.name.toLowerCase().includes(q) ||
-      m.phone.includes(q) ||
-      (m.category || '').toLowerCase().includes(q);
-    const matchesMarket =
-      marketFilter.value === 'all' || m.activeMarketId === marketFilter.value;
-    return matchesQuery && matchesMarket;
+    const q = searchQuery.value.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      m.name.toLowerCase().includes(q)
+      || String(m.id).includes(q)
+      || (m.phone || '').toLowerCase().includes(q)
+      || (m.activePlaceNumber || '').toLowerCase().includes(q)
+      || (m.email || '').toLowerCase().includes(q)
+    );
   }),
 );
 
-const getMarketLabel = (marketId) => {
-  const m = findMarket(marketId);
-  return m ? getAdministrativeLocationLabel(m) : '—';
-};
+const getMarketLabel = (marketId) => findMarket(marketId)?.name || '—';
 
 const openView = (merchant) => {
   viewingMerchant.value = merchant;
   viewOpen.value = true;
 };
 
-const printMarketId = computed(() => {
-  if (marketFilter.value !== 'all') return marketFilter.value;
-  return assignedMarketId.value || undefined;
-});
+const openCreate = () => {
+  createDraft.value = { role: 'COMMERCANT' };
+  formOpen.value = true;
+};
 
-const handlePrint = () => openMerchantsPrint(printMarketId.value);
+const handleCreate = async (payload) => {
+  const created = await addUser({
+    ...payload,
+    role: 'COMMERCANT',
+  });
+  if (created) {
+    formOpen.value = false;
+    await refreshAll();
+  }
+};
 </script>
 
 <template>
-  <div class="space-y-6">
-    <FilterBar
-      :show-clear="searchQuery || marketFilter !== 'all'"
-      @clear="searchQuery = ''; marketFilter = 'all'"
-    >
-      <div class="flex-1 space-y-1 w-full">
-        <label class="text-xs font-medium text-muted-foreground">Recherche</label>
-        <div class="relative">
-          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input v-model="searchQuery" placeholder="Nom, téléphone..." class="pl-9 bg-card" />
+  <div class="space-y-4">
+    <div class="bg-white border border-slate-200/80 rounded-sm shadow-sm">
+      <div class="flex flex-col gap-4 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 class="text-lg font-semibold text-slate-800 sm:text-xl">
+          Le Nombre total des commerçants :
+          <span class="text-sky-700">{{ filteredMerchants.length }}</span>
+        </h1>
+
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button
+            v-if="canAddMerchant"
+            type="button"
+            class="inline-flex h-10 items-center justify-center rounded-sm bg-sky-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-sky-700"
+            @click="openCreate"
+          >
+            Ajouter
+          </button>
+
+          <div class="space-y-1">
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+              Rechercher ici
+            </label>
+            <input
+              v-model="searchQuery"
+              type="search"
+              placeholder="Nom, téléphone, étal..."
+              class="h-10 w-full min-w-[14rem] rounded-sm border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30 sm:w-64"
+            />
+          </div>
         </div>
       </div>
-    </FilterBar>
 
-    <MerchantsTable
-      :merchants="filteredMerchants"
-      :get-market-label="getMarketLabel"
-      @view="openView"
-    />
+      <div class="px-5 py-4">
+        <h2 class="mb-3 text-base font-semibold text-slate-800">
+          Liste des commerçants
+        </h2>
+
+        <MerchantsTable
+          :merchants="filteredMerchants"
+          :get-market-label="getMarketLabel"
+          @edit="openView"
+        />
+      </div>
+    </div>
 
     <MerchantViewDialog
       v-model:open="viewOpen"
       :merchant="viewingMerchant"
       :market-name="viewingMerchant ? findMarket(viewingMerchant.activeMarketId)?.name : ''"
+    />
+
+    <UserFormDialog
+      v-if="canAddMerchant"
+      v-model:open="formOpen"
+      :user="createDraft"
+      @submit="handleCreate"
     />
   </div>
 </template>

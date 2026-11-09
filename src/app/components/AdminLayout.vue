@@ -210,7 +210,6 @@ const goToProfile = () => router.push('/profile');
           </div>
           <div v-if="sidebarOpen" class="flex-1 min-w-0">
             <h1 class="text-sm font-bold text-foreground tracking-tight truncate">AKAGURIRO</h1>
-            <p class="text-[10px] text-primary font-semibold uppercase tracking-wider">Espace Contrôle</p>
           </div>
           <button
             type="button"
