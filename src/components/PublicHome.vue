@@ -12,11 +12,12 @@ const router = useRouter();
 
 const market = computed(() => markets.value[0] || null);
 const merchantCount = computed(() => merchants.value.length);
-const freePlaces = computed(() => {
-  if (!market.value) return 0;
-  return Math.max(0, (market.value.totalPlaces || 0) - (market.value.occupiedPlaces || 0));
-});
-const occupiedPlaces = computed(() => places.value.filter((place) => place.status === 'occupied').length || market.value?.occupiedPlaces || 0);
+const occupiedPlaces = computed(() =>
+  places.value.filter((place) => place.status === 'occupied').length,
+);
+const freePlaces = computed(() =>
+  places.value.filter((place) => place.status === 'available').length,
+);
 </script>
 
 <template>

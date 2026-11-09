@@ -43,7 +43,6 @@ const createEmptyForm = (market = null) => ({
   zone: market?.zone || '',
   colline: market?.colline || '',
   description: market?.description || '',
-  totalPlaces: market?.totalPlaces || 50,
 });
 
 const form = ref({
@@ -53,7 +52,6 @@ const form = ref({
   zone: '',
   colline: '',
   description: '',
-  totalPlaces: 50,
 });
 
 const imageFile = ref(null);
@@ -143,7 +141,6 @@ const handleSubmit = () => {
     colline: form.value.colline,
     location,
     description: form.value.description.trim(),
-    totalPlaces: Number(form.value.totalPlaces) || 0,
     imageFile: imageFile.value,
   });
   close();
@@ -169,24 +166,18 @@ const handleSubmit = () => {
           <Input id="market-name" v-model="form.name" placeholder="Marché Central de..." required />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <Label>Province</Label>
-            <Select v-model="form.province">
-              <SelectTrigger>
-                <SelectValue placeholder="Choisir une province" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="province in PROVINCE_OPTIONS" :key="province.value" :value="province.value">
-                  {{ province.label }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div class="space-y-2">
-            <Label for="market-places">Capacité (étals)</Label>
-            <Input id="market-places" v-model.number="form.totalPlaces" type="number" min="1" required />
-          </div>
+        <div class="space-y-2">
+          <Label>Province</Label>
+          <Select v-model="form.province">
+            <SelectTrigger>
+              <SelectValue placeholder="Choisir une province" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="province in PROVINCE_OPTIONS" :key="province.value" :value="province.value">
+                {{ province.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

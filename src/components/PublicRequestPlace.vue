@@ -5,9 +5,9 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { Check } from 'lucide-vue-next';
 import { useApp } from '../composables/useApp.js';
 import { findMarketById } from '../utils/categories.js';
-import { Store, User, Phone, FileText } from 'lucide-vue-next';
 
 const {
   markets,
@@ -21,10 +21,21 @@ const candidatePhone = ref(currentUser.value?.phone || '');
 const activity = ref('');
 const targetMarketId = ref(markets.value[0]?.id ?? null);
 const description = ref('');
+const submitting = ref(false);
 
 const selectedMarket = computed(() =>
   findMarketById(markets.value, targetMarketId.value),
 );
+
+const isLoggedIn = computed(() =>
+  Boolean(currentUser.value?.id) && currentUser.value?.role !== 'VISITOR',
+);
+
+const nameValid = computed(() => candidateName.value.trim().length >= 2);
+const phoneValid = computed(() => candidatePhone.value.trim().length >= 8);
+const marketValid = computed(() => Boolean(targetMarketId.value));
+const activityValid = computed(() => activity.value.trim().length >= 2);
+const descriptionValid = computed(() => description.value.trim().length >= 10);
 
 watch(
   markets,
@@ -36,13 +47,21 @@ watch(
   { immediate: true },
 );
 
-function handleSubmit(e) {
+watch(
+  currentUser,
+  (user) => {
+    if (user?.name && !candidateName.value) candidateName.value = user.name;
+    if (user?.phone && !candidatePhone.value) candidatePhone.value = user.phone;
+  },
+);
+
+async function handleSubmit(e) {
   e.preventDefault();
-  if (!currentUser.value?.id || currentUser.value.role === 'VISITOR') {
+  if (!isLoggedIn.value) {
     showToast('Connectez-vous pour soumettre une demande.', 'error');
     return;
   }
-  if (!candidateName.value || !candidatePhone.value || !activity.value || !description.value) {
+  if (!nameValid.value || !phoneValid.value || !activityValid.value || !descriptionValid.value) {
     showToast('Veuillez remplir l\'intégralité des champs obligatoires.', 'error');
     return;
   }
@@ -51,109 +70,162 @@ function handleSubmit(e) {
     return;
   }
 
-  addPlaceRequest({
-    merchantName: candidateName.value,
-    merchantPhone: candidatePhone.value,
-    activityType: activity.value,
-    requestedMarketId: targetMarketId.value,
-    description: description.value,
-  });
-
-  activity.value = '';
-  description.value = '';
+  submitting.value = true;
+  try {
+    await addPlaceRequest({
+      merchantName: candidateName.value.trim(),
+      merchantPhone: candidatePhone.value.trim(),
+      activityType: activity.value.trim(),
+      requestedMarketId: targetMarketId.value,
+      description: description.value.trim(),
+    });
+    activity.value = '';
+    description.value = '';
+  } finally {
+    submitting.value = false;
+  }
 }
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-    <div class="space-y-1">
-      <h1>
-        Demande Publique d'Octroi d'Emplacement
-      </h1>
-    </div>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white border border-slate-200/80 rounded-sm shadow-sm">
+      <div class="px-5 sm:px-8 pt-6 pb-4 border-b border-slate-100">
+        <h1 class="text-xl sm:text-2xl font-semibold text-slate-800 tracking-tight">
+          Nouvelle demande d'emplacement
+        </h1>
+        <p class="mt-1 text-sm text-slate-500">
+          Remplissez le formulaire pour solliciter un emplacement sur le marché.
+        </p>
+      </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      <div class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-        <h2 class="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-          <Store class="w-5 h-5 text-primary" />
-          Introduire un dossier
-        </h2>
+      <form @submit="handleSubmit" class="px-5 sm:px-8 py-6 space-y-5">
+        <div
+          v-if="!isLoggedIn"
+          class="rounded-sm border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+        >
+          Connectez-vous pour pouvoir enregistrer votre demande.
+        </div>
 
-        <form @submit="handleSubmit" class="space-y-4 text-xs font-bold text-slate-700">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="space-y-1">
-              <label class="text-slate-500 block">Nom du Candidat</label>
-              <div class="flex items-center gap-2 bg-background border border-slate-200 rounded-xl px-3 py-2.5">
-                <User class="w-4 h-4 text-slate-400 shrink-0" />
-                <input
-                  type="text"
-                  placeholder="ex. Emery Ndayiragije"
-                  v-model="candidateName"
-                  class="bg-transparent border-0 outline-none text-xs w-full text-slate-800 font-medium"
-                  required
-                />
-              </div>
-            </div>
-
-            <div class="space-y-1">
-              <label class="text-slate-500 block">Numéro de Téléphone</label>
-              <div class="flex items-center gap-2 bg-background border border-slate-200 rounded-xl px-3 py-2.5">
-                <Phone class="w-4 h-4 text-slate-400 shrink-0" />
-                <input
-                  type="tel"
-                  placeholder="ex. +257 79 884 902"
-                  v-model="candidatePhone"
-                  class="bg-transparent border-0 outline-none text-xs w-full text-slate-800 font-medium"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="space-y-1">
-            <label class="text-slate-500 block">Marché</label>
-            <div class="flex items-center gap-2 bg-background border border-slate-200 rounded-xl px-3 py-2.5">
-              <Store class="w-4 h-4 text-slate-400 shrink-0" />
-              <span class="text-xs text-slate-800 font-medium">
-                {{ selectedMarket?.name || 'Marché en cours de configuration' }}
-              </span>
-            </div>
-          </div>
-
-          <div class="space-y-1">
-            <label class="text-slate-500 block">Description de l'activité</label>
-            <div class="flex items-center gap-2 bg-background border border-slate-200 rounded-xl px-3 py-2.5">
-              <FileText class="w-4 h-4 text-slate-400 shrink-0 self-start mt-1" />
+        <!-- Ligne 1 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 lg:gap-4">
+          <div class="lg:col-span-4 space-y-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Nom du candidat
+            </label>
+            <div class="relative">
               <input
+                v-model="candidateName"
                 type="text"
-                placeholder="ex. Vente de poisson frais de Rumonge"
-                v-model="activity"
-                class="bg-transparent border-0 outline-none text-xs w-full text-slate-800 font-medium"
+                placeholder="ex. Emery Ndayiragije"
                 required
+                class="w-full h-10 rounded-sm border border-slate-300 bg-white px-3 pr-9 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+              />
+              <Check
+                v-if="nameValid"
+                class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500"
               />
             </div>
           </div>
 
-          <div class="space-y-1">
-            <label class="text-slate-500 block">Pourquoi avez-vous besoin de cette place ?</label>
-            <textarea
-              rows="4"
-              placeholder="Rédigez ici vos motivations..."
-              v-model="description"
-              class="w-full bg-background border border-slate-200 rounded-xl py-2.5 px-4 outline-none font-medium text-slate-850 text-xs focus:bg-white focus:border-primary transition-colors"
-              required
-            />
+          <div class="lg:col-span-4 space-y-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Téléphone
+            </label>
+            <div class="relative">
+              <input
+                v-model="candidatePhone"
+                type="tel"
+                placeholder="ex. +257 79 884 902"
+                required
+                class="w-full h-10 rounded-sm border border-slate-300 bg-white px-3 pr-9 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+              />
+              <Check
+                v-if="phoneValid"
+                class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500"
+              />
+            </div>
           </div>
 
+          <div class="lg:col-span-4 space-y-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Marché
+            </label>
+            <div class="relative">
+              <select
+                v-if="markets.length > 1"
+                v-model="targetMarketId"
+                class="w-full h-10 appearance-none rounded-sm border border-slate-300 bg-white px-3 pr-9 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+              >
+                <option v-for="m in markets" :key="m.id" :value="m.id">{{ m.name }}</option>
+              </select>
+              <input
+                v-else
+                type="text"
+                :value="selectedMarket?.name || 'Aucun marché configuré'"
+                readonly
+                class="w-full h-10 rounded-sm border border-slate-300 bg-slate-50 px-3 pr-9 text-sm text-slate-800 outline-none"
+              />
+              <Check
+                v-if="marketValid"
+                class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Ligne 2 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4">
+          <div class="lg:col-span-5 space-y-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Activité / filière
+            </label>
+            <div class="relative">
+              <input
+                v-model="activity"
+                type="text"
+                placeholder="ex. Vente de poisson frais"
+                required
+                class="w-full h-10 rounded-sm border border-slate-300 bg-white px-3 pr-9 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+              />
+              <Check
+                v-if="activityValid"
+                class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500"
+              />
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 space-y-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Motivation de la demande
+            </label>
+            <div class="relative">
+              <textarea
+                v-model="description"
+                rows="3"
+                placeholder="Expliquez pourquoi vous avez besoin de cet emplacement..."
+                required
+                class="w-full min-h-[5.5rem] resize-y rounded-sm border border-slate-300 bg-white px-3 py-2.5 pr-9 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+              />
+              <Check
+                v-if="descriptionValid"
+                class="pointer-events-none absolute right-2.5 top-3 h-4 w-4 text-emerald-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-2">
           <button
             type="submit"
-            class="w-full bg-primary hover:bg-primary transition-all text-white font-extrabold py-3.5 rounded-xl text-center text-xs tracking-wide shadow shadow-emerald-700/30 pt-3.5"
+            :disabled="submitting || !isLoggedIn"
+            class="inline-flex h-11 min-w-[10rem] items-center justify-center rounded-sm bg-sky-600 px-8 text-sm font-semibold text-white transition-colors hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Soumettre
+            {{ submitting ? 'Enregistrement...' : 'Enregistrer' }}
           </button>
-        </form>
-      </div>
-
+        </div>
+      </form>
     </div>
   </div>
 </template>

@@ -22,7 +22,7 @@ export function mapMarket(m) {
     colline: m.colline || '',
     location: m.location || '',
     description: m.description || '',
-    totalPlaces: m.total_places ?? 0,
+    totalPlaces: m.places_count ?? m.total_places ?? 0,
     occupiedPlaces: m.occupied_places ?? 0,
     image: resolveStorageUrl(m.image),
     coverImage: resolveStorageUrl(m.cover_image || m.image),
@@ -225,7 +225,6 @@ export function marketToApi(data) {
     colline: data.colline || null,
     location: data.location,
     description: data.description,
-    total_places: data.totalPlaces,
   };
 }
 

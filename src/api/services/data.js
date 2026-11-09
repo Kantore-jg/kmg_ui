@@ -39,7 +39,6 @@ function marketToFormData(market) {
   appendScalar(formData, 'colline', api.colline);
   appendScalar(formData, 'location', api.location);
   appendScalar(formData, 'description', api.description);
-  appendScalar(formData, 'total_places', api.total_places);
 
   if (market.imageFile) {
     formData.append('image', market.imageFile);

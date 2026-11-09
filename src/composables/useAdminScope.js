@@ -116,7 +116,7 @@ export function useAdminScope() {
     scopedMarkets.value.map((market) => {
       const marketPlaces = scopedPlaces.value.filter((p) => p.marketId == market.id);
       const occupied = marketPlaces.filter((p) => p.status === PLACE_STATUS.OCCUPIED).length;
-      const total = marketPlaces.length || market.totalPlaces || 0;
+      const total = marketPlaces.length;
       return {
         id: market.id,
         name: market.name,
