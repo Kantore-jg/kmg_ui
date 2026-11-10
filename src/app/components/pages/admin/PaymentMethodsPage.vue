@@ -254,11 +254,11 @@ const marketName = (id) => markets.value.find((m) => m.id == id)?.name || '—';
           <DialogTitle>{{ editing ? 'Modifier' : 'Nouveau moyen de paiement' }}</DialogTitle>
         </DialogHeader>
         <form class="space-y-4" @submit.prevent="handleSubmit">
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label>Nom</Label>
             <Input v-model="form.name" required placeholder="Ex. Banque de Burundi" />
           </div>
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label>Type</Label>
             <Select v-model="form.type">
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -269,16 +269,16 @@ const marketName = (id) => markets.value.find((m) => m.id == id)?.name || '—';
               </SelectContent>
             </Select>
           </div>
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label>N° compte</Label>
             <Input v-model="form.accountNumber" />
           </div>
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label>Titulaire</Label>
             <Input v-model="form.accountName" />
           </div>
-          <div class="flex items-center justify-between">
-            <Label>Actif</Label>
+          <div class="flex items-center justify-between rounded-sm border border-slate-200 bg-slate-50 px-3 py-2.5">
+            <Label class="mb-0">Actif</Label>
             <Switch :checked="form.isActive" @update:checked="form.isActive = $event" />
           </div>
           <DialogFooter>

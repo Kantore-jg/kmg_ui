@@ -83,12 +83,12 @@ const handleSubmit = () => {
       </DialogHeader>
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label>Code de l'emplacement</Label>
-          <Input :model-value="place.id" readonly class="bg-muted" />
+          <Input :model-value="place.id" readonly class="bg-slate-50" />
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label>Commerçant assigné</Label>
           <Select v-model="merchantId">
             <SelectTrigger>
@@ -103,7 +103,7 @@ const handleSubmit = () => {
           </Select>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label>Statut technique</Label>
           <Select v-model="status">
             <SelectTrigger>

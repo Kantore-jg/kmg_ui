@@ -94,10 +94,10 @@ async function handleSubmit(e) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-background flex items-center justify-center p-4 sm:p-8">
+  <div class="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8">
     <button
       type="button"
-      class="absolute top-5 left-5 flex items-center gap-2 text-muted-foreground hover:text-primary text-xs font-semibold transition-colors"
+      class="absolute top-5 left-5 inline-flex items-center gap-2 text-xs font-semibold text-slate-500 transition-colors hover:text-sky-700"
       @click="router.push('/')"
     >
       <ArrowLeft class="w-4 h-4" />
@@ -105,60 +105,67 @@ async function handleSubmit(e) {
     </button>
 
     <div class="w-full max-w-md">
-      <div class="text-center mb-8">
-        <p class="text-sm text-muted-foreground mt-1">akaguririo</p>
-      </div>
+      <div class="bg-white border border-slate-200/80 rounded-sm shadow-sm">
+        <div class="border-b border-slate-100 px-5 sm:px-8 pt-6 pb-4">
+          <p class="text-[11px] font-semibold uppercase tracking-wide text-sky-700">Akaguriro</p>
+          <h1 class="mt-1 text-xl sm:text-2xl font-semibold tracking-tight text-slate-800">
+            {{ isLogin ? 'Connexion' : 'Créer un compte' }}
+          </h1>
+          <p class="mt-1 text-sm text-slate-500">
+            {{ isLogin ? 'Accédez à votre espace marché' : 'Rejoignez la plateforme digitale' }}
+          </p>
+        </div>
 
-      <div class="bs-card p-8 shadow-md">
-        <h2 class="text-lg font-semibold text-foreground mb-1">
-          {{ isLogin ? 'Connexion' : 'Créer un compte' }}
-        </h2>
-        <p class="text-sm text-muted-foreground mb-6">
-          {{ isLogin ? 'Accédez à votre espace marché' : 'Rejoignez la plateforme digitale' }}
-        </p>
-
-        <form @submit="handleSubmit" class="space-y-4">
+        <form @submit="handleSubmit" class="px-5 sm:px-8 py-6 space-y-4">
           <div v-if="!isLogin" class="space-y-1.5">
-            <label class="text-xs font-medium text-muted-foreground">Nom complet</label>
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Nom complet
+            </label>
             <input
               v-model="name"
               type="text"
               placeholder="ex. Claver Ndayishimiye"
-              class="w-full bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary/30 rounded-xl py-3 px-4 text-sm outline-none transition-all"
+              class="h-10 w-full rounded-sm border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             />
           </div>
 
           <div class="space-y-1.5">
-            <label class="text-xs font-medium text-muted-foreground">Email</label>
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Email
+            </label>
             <input
               v-model="email"
               type="email"
               placeholder="ex. commercant@akaguriro.bi"
-              class="w-full bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary/30 rounded-xl py-3 px-4 text-sm outline-none transition-all"
               required
+              class="h-10 w-full rounded-sm border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             />
           </div>
 
           <div v-if="!isLogin" class="space-y-1.5">
-            <label class="text-xs font-medium text-muted-foreground">Téléphone</label>
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Téléphone
+            </label>
             <input
               v-model="phone"
               type="tel"
               placeholder="ex. +257 79 123 456"
-              class="w-full bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary/30 rounded-xl py-3 px-4 text-sm outline-none transition-all"
+              class="h-10 w-full rounded-sm border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             />
           </div>
 
-          <div v-if="!isLogin" class="space-y-2">
-            <label class="text-xs font-medium text-muted-foreground">Photo de profil</label>
+          <div v-if="!isLogin" class="space-y-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Photo de profil
+            </label>
             <div class="flex items-center gap-4">
-              <div class="w-14 h-14 rounded-xl bg-muted border border-border overflow-hidden flex items-center justify-center shrink-0">
-                <img v-if="avatarPreview" :src="avatarPreview" alt="Aperçu" class="w-full h-full object-cover" />
-                <User v-else class="w-6 h-6 text-muted-foreground" />
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-slate-200 bg-slate-50">
+                <img v-if="avatarPreview" :src="avatarPreview" alt="Aperçu" class="h-full w-full object-cover" />
+                <User v-else class="h-6 w-6 text-slate-400" />
               </div>
-              <label class="flex-1 cursor-pointer">
-                <span class="inline-flex items-center gap-2 text-xs font-semibold text-primary bg-primary/10 border border-primary/20 px-3 py-2 rounded-lg hover:bg-primary/15 transition-colors">
-                  <Upload class="w-4 h-4" />
+              <label class="cursor-pointer">
+                <span class="inline-flex h-10 items-center gap-2 rounded-sm border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50">
+                  <Upload class="h-4 w-4" />
                   Choisir une image
                 </span>
                 <input type="file" accept="image/*" class="hidden" @change="onAvatarChange" />
@@ -167,41 +174,45 @@ async function handleSubmit(e) {
           </div>
 
           <div class="space-y-1.5">
-            <label class="text-xs font-medium text-muted-foreground">Mot de passe</label>
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Mot de passe
+            </label>
             <input
               v-model="password"
               type="password"
               placeholder="••••••••"
-              class="w-full bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary/30 rounded-xl py-3 px-4 text-sm outline-none transition-all"
               required
+              class="h-10 w-full rounded-sm border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             />
           </div>
 
           <div v-if="!isLogin" class="space-y-1.5">
-            <label class="text-xs font-medium text-muted-foreground">Confirmer le mot de passe</label>
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+              Confirmer le mot de passe
+            </label>
             <input
               v-model="passwordConfirmation"
               type="password"
               placeholder="••••••••"
-              class="w-full bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary/30 rounded-xl py-3 px-4 text-sm outline-none transition-all"
               required
+              class="h-10 w-full rounded-sm border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             />
           </div>
 
           <button
             type="submit"
             :disabled="submitting"
-            class="w-full bs-btn-primary py-3.5 disabled:opacity-50"
+            class="inline-flex h-11 w-full items-center justify-center rounded-sm bg-sky-600 px-8 text-sm font-semibold text-white transition-colors hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {{ submitting ? (isLogin ? 'Connexion...' : 'Inscription...') : (isLogin ? 'Se connecter' : "S'inscrire") }}
           </button>
         </form>
 
-        <p class="text-center text-xs text-muted-foreground mt-5">
+        <p class="border-t border-slate-100 px-5 sm:px-8 py-4 text-center text-xs text-slate-500">
           {{ isLogin ? "Pas encore de compte ?" : "Déjà inscrit ?" }}
           <button
             type="button"
-            class="text-primary hover:underline font-semibold"
+            class="font-semibold text-sky-700 hover:underline"
             @click="goToAuthMode(isLogin ? 'register' : 'login')"
           >
             {{ isLogin ? "Créer un compte" : "Se connecter" }}

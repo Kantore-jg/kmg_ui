@@ -161,12 +161,12 @@ const handleSubmit = () => {
       </DialogHeader>
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label for="market-name">Nom du marché</Label>
           <Input id="market-name" v-model="form.name" placeholder="Marché Central de..." required />
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label>Province</Label>
           <Select v-model="form.province">
             <SelectTrigger>
@@ -180,8 +180,8 @@ const handleSubmit = () => {
           </Select>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="space-y-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="space-y-1.5">
             <Label>Commune</Label>
             <Select v-model="form.commune">
               <SelectTrigger>
@@ -194,7 +194,7 @@ const handleSubmit = () => {
               </SelectContent>
             </Select>
           </div>
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label>Zone</Label>
             <Select v-model="form.zone">
               <SelectTrigger>
@@ -207,7 +207,7 @@ const handleSubmit = () => {
               </SelectContent>
             </Select>
           </div>
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label>Colline</Label>
             <Select v-model="form.colline">
               <SelectTrigger>
@@ -222,32 +222,32 @@ const handleSubmit = () => {
           </div>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label for="market-description">Description</Label>
           <textarea
             id="market-description"
             v-model="form.description"
             rows="3"
-            class="flex w-full rounded-md border border-input bg-input-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+            class="w-full min-h-[5.5rem] resize-y rounded-sm border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             placeholder="Description du marché..."
           />
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label>Image du marché</Label>
           <div class="flex items-center gap-4">
-            <div class="w-20 h-20 rounded-xl bg-muted border overflow-hidden shrink-0">
-              <img v-if="imagePreview" :src="imagePreview" alt="Aperçu" class="w-full h-full object-cover" />
+            <div class="h-20 w-20 shrink-0 overflow-hidden rounded-sm border border-slate-200 bg-slate-50">
+              <img v-if="imagePreview" :src="imagePreview" alt="Aperçu" class="h-full w-full object-cover" />
             </div>
             <label class="cursor-pointer">
-              <span class="inline-flex items-center gap-2 text-xs font-semibold text-primary border border-input px-3 py-2 rounded-lg hover:bg-muted transition-colors">
+              <span class="inline-flex h-10 items-center gap-2 rounded-sm border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50">
                 <Upload class="w-4 h-4" />
                 {{ isEditing ? 'Changer l\'image' : 'Sélectionner une image' }}
               </span>
               <input type="file" accept="image/*" class="hidden" @change="onImageChange" />
             </label>
           </div>
-          <p v-if="!isEditing && !imageFile" class="text-xs text-muted-foreground">Image requise pour la création</p>
+          <p v-if="!isEditing && !imageFile" class="text-xs text-slate-500">Image requise pour la création</p>
         </div>
 
         <DialogFooter>

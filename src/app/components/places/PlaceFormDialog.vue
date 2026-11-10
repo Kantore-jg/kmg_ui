@@ -97,22 +97,22 @@ const handleSubmit = () => {
     <DialogContent class="sm:max-w-md">
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label for="place-id">Code étal</Label>
           <Input
             id="place-id"
             v-model="form.id"
             placeholder="ex. A-04"
             required
-        />
+          />
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <div class="flex items-center justify-between">
             <Label>Bloc</Label>
             <button
               type="button"
-              class="text-xs font-semibold text-primary hover:underline"
+              class="text-xs font-semibold text-sky-700 hover:underline"
               @click="emit('create-block', form.marketId)"
             >
               + Nouveau bloc
@@ -132,12 +132,12 @@ const handleSubmit = () => {
               </SelectItem>
             </SelectContent>
           </Select>
-          <p v-if="!blocksForMarket.length" class="text-xs text-muted-foreground">
+          <p v-if="!blocksForMarket.length" class="text-xs text-slate-500">
             Créez d'abord un bloc pour ce marché.
           </p>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label for="place-category">Activité (optionnel)</Label>
           <Input
             id="place-category"

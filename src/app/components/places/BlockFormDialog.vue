@@ -94,17 +94,17 @@ const handleSubmit = () => {
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div class="grid grid-cols-2 gap-3">
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label for="block-name">Nom du bloc</Label>
             <Input id="block-name" v-model="form.name" placeholder="Bloc Poissons" required />
           </div>
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label for="block-code">Code (optionnel)</Label>
             <Input id="block-code" v-model="form.code" placeholder="A" />
           </div>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label for="block-rent">Loyer par place (BIF)</Label>
           <Input
             id="block-rent"
@@ -117,13 +117,13 @@ const handleSubmit = () => {
           />
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label for="block-desc">Description</Label>
           <textarea
             id="block-desc"
             v-model="form.description"
             rows="2"
-            class="flex w-full rounded-md border border-input bg-input-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+            class="w-full min-h-[4.5rem] resize-y rounded-sm border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             placeholder="Zone dédiée à la poissonnerie..."
           />
         </div>

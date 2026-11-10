@@ -170,7 +170,7 @@ const handleSubmit = () => {
       </DialogHeader>
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label>Place</Label>
           <Select v-model="placeId">
             <SelectTrigger><SelectValue placeholder="Sélectionner une place" /></SelectTrigger>
@@ -187,7 +187,7 @@ const handleSubmit = () => {
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label>Année</Label>
             <Select :model-value="String(periodYear)" @update:model-value="periodYear = Number($event)">
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -196,7 +196,7 @@ const handleSubmit = () => {
               </SelectContent>
             </Select>
           </div>
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label>Mois</Label>
             <Select :model-value="String(periodMonth)" @update:model-value="periodMonth = Number($event)">
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -209,7 +209,7 @@ const handleSubmit = () => {
           </div>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label>Banque / moyen de paiement</Label>
           <Select v-model="paymentMethodId">
             <SelectTrigger>
@@ -223,16 +223,16 @@ const handleSubmit = () => {
           </Select>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label>Montant (BIF)</Label>
-          <Input :model-value="rentAmount" type="number" readonly class="bg-muted" />
-          <p class="text-xs text-muted-foreground">Montant issu du loyer du bloc.</p>
+          <Input :model-value="rentAmount" type="number" readonly class="bg-slate-50" />
+          <p class="text-xs text-slate-500">Montant issu du loyer du bloc.</p>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label for="rec-file">Fichier justificatif</Label>
           <Input id="rec-file" type="file" accept="image/*,.pdf" @change="onFileChange" required />
-          <p v-if="fileName" class="text-xs text-muted-foreground">{{ fileName }}</p>
+          <p v-if="fileName" class="text-xs text-slate-500">{{ fileName }}</p>
         </div>
 
         <DialogFooter>

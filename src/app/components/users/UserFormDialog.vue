@@ -135,24 +135,24 @@ const handleSubmit = () => {
       </DialogHeader>
 
       <form class="space-y-4" @submit.prevent="handleSubmit">
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label for="user-name">Nom complet</Label>
           <Input id="user-name" v-model="form.name" placeholder="Jean Dupont" required />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="space-y-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1.5">
             <Label for="user-email">Email</Label>
             <Input id="user-email" v-model="form.email" type="email" placeholder="email@exemple.bi" required />
           </div>
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             <Label for="user-phone">Téléphone (optionnel)</Label>
             <Input id="user-phone" v-model="form.phone" placeholder="+25779123456" />
-            <p class="text-xs text-muted-foreground">Doit être unique.</p>
+            <p class="text-xs text-slate-500">Doit être unique.</p>
           </div>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <Label for="user-password">
             {{ isEditing ? 'Nouveau mot de passe (optionnel)' : 'Mot de passe' }}
           </Label>
@@ -166,28 +166,22 @@ const handleSubmit = () => {
           />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <Label>Rôle</Label>
-            <Select v-model="form.role" :disabled="isSelf">
-              <SelectTrigger>
-                <SelectValue placeholder="Choisir un rôle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="r in ROLES" :key="r.value" :value="r.value">
-                  {{ r.label }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
+        <div class="space-y-1.5">
+          <Label>Rôle</Label>
+          <Select v-model="form.role" :disabled="isSelf">
+            <SelectTrigger>
+              <SelectValue placeholder="Choisir un rôle" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="r in ROLES" :key="r.value" :value="r.value">
+                {{ r.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div class="flex items-center justify-between rounded-lg border border-border p-3">
-          <div>
-            <p class="text-sm font-medium">Compte actif</p>
-            
-          </div>
+        <div class="flex items-center justify-between rounded-sm border border-slate-200 bg-slate-50 px-3 py-2.5">
+          <p class="text-sm font-medium text-slate-700">Compte actif</p>
           <Switch
             v-model:checked="form.isActive"
             :disabled="isSelf"
