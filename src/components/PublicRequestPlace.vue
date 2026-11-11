@@ -49,6 +49,10 @@ const isLoggedIn = computed(() =>
   Boolean(currentUser.value?.id) && currentUser.value?.role !== 'VISITOR',
 );
 
+const alreadyHasPlace = computed(() =>
+  isLoggedIn.value && Boolean(currentUser.value?.hasAssignedPlace),
+);
+
 const nameValid = computed(() => candidateName.value.trim().length >= 2);
 const phoneValid = computed(() => candidatePhone.value.trim().length >= 8);
 const marketValid = computed(() => Boolean(targetMarketId.value));
@@ -61,6 +65,7 @@ const descriptionValid = computed(() => description.value.trim().length >= 10);
 
 const canSubmit = computed(() =>
   isLoggedIn.value
+  && !alreadyHasPlace.value
   && nameValid.value
   && phoneValid.value
   && marketValid.value
@@ -152,6 +157,10 @@ async function handleSubmit(e) {
     showToast('Connectez-vous pour soumettre une demande.', 'error');
     return;
   }
+  if (alreadyHasPlace.value) {
+    showToast('Vous avez déjà une place assignée.', 'error');
+    return;
+  }
   if (!canSubmit.value) {
     if (placeOccupied.value) {
       showToast('Cet emplacement est déjà occupé. Choisissez une place libre.', 'error');
@@ -193,7 +202,21 @@ async function handleSubmit(e) {
         </p>
       </div>
 
-      <form @submit="handleSubmit" class="px-5 sm:px-8 py-6 space-y-5">
+      <div v-if="alreadyHasPlace" class="px-5 sm:px-8 py-6">
+        <div class="flex items-start gap-3 rounded-sm border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-800">
+          <AlertTriangle class="mt-0.5 h-5 w-5 shrink-0" />
+          <div>
+            <p class="font-semibold">Vous n'êtes pas éligible à une nouvelle demande.</p>
+            <p class="mt-1">
+              Vous avez déjà une place assignée<template v-if="currentUser?.marketName">
+              au marché <strong>{{ currentUser.marketName }}</strong></template>.
+              Seules les personnes sans place peuvent faire une demande d'emplacement.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <form v-else @submit="handleSubmit" class="px-5 sm:px-8 py-6 space-y-5">
         <div
           v-if="!isLoggedIn"
           class="rounded-sm border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"

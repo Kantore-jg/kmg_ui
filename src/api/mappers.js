@@ -183,6 +183,7 @@ export function mapUser(u) {
     marketId: u.managed_market_id || u.active_market_id || null,
     marketName: u.managed_market?.name || u.active_market?.name || '',
     merchantId: role === 'COMMERCANT' ? u.id : null,
+    hasAssignedPlace: Boolean(u.has_assigned_place),
     permissions: u.permissions || [],
     createdAt: u.created_at?.split('T')[0] || '',
   };
