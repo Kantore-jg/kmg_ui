@@ -108,7 +108,10 @@ const formatAmount = (n) => Number(n || 0).toLocaleString('fr-FR');
   <div class="space-y-6">
     <PageHeader title="Tableau de bord" :subtitle="!isMerchant ? periodLabel : ''" />
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+      :class="isMerchant ? '' : 'xl:grid-cols-4'"
+    >
       <template v-if="!isMerchant">
         <StatCard
           title="Loyers attendus"
