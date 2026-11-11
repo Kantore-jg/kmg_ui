@@ -61,9 +61,11 @@ export function createDataActions(state) {
     ]);
     state.places.value = places;
     state.merchants.value = merchants;
+    await loadBlocks();
     return {
       places,
       merchants,
+      blocks: state.blocks.value,
     };
   };
 

@@ -48,7 +48,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-background flex flex-col text-foreground">
+  <div class="min-h-screen bg-slate-100/80 flex flex-col text-foreground">
     <Navigation />
 
     <main class="flex-1">

@@ -56,7 +56,7 @@ const mobileMenuOpen = ref(false);
 const navItems = [
   { id: 'home', label: 'Accueil', path: '/' },
   { id: 'merchants', label: 'Commerçants', path: '/merchants' },
-  { id: 'request', label: 'Demander une place', path: '/request' },
+  { id: 'request', label: 'Demande place', path: '/request' },
 ];
 
 function handleLogoClick() {
@@ -90,17 +90,14 @@ async function handleLogout() {
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 w-full bg-card text-foreground shadow-sm border-b border-border">
+  <header class="sticky top-0 z-50 w-full bg-[#0b3a7a] text-white shadow-sm">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14">
         <div @click="handleLogoClick" class="flex items-center gap-2.5 cursor-pointer group shrink-0">
-          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+          <div class="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
             <Building2 class="w-4 h-4 text-white" />
           </div>
-          <div>
-            <h1 class="text-base font-bold tracking-tight text-primary">AKAGURIRO</h1>
-            <!-- <p class="text-[9px] uppercase tracking-wider text-muted-foreground font-medium leading-none">Smart Markets Burundi</p> -->
-          </div>
+          <h1 class="text-base font-bold tracking-tight text-white">AKAGURIRO</h1>
         </div>
 
         <nav class="hidden lg:flex items-center gap-1">
@@ -110,13 +107,13 @@ async function handleLogout() {
             @click="handlePublicNav(item.id)"
             class="px-4 py-2 text-sm font-medium transition-colors relative"
             :class="isPublicRoute && publicTab === item.id
-              ? 'text-primary'
-              : 'text-muted-foreground hover:text-foreground'"
+              ? 'text-white'
+              : 'text-white/70 hover:text-white'"
           >
             {{ item.label }}
             <span
               v-if="isPublicRoute && publicTab === item.id"
-              class="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full"
+              class="absolute bottom-0 left-2 right-2 h-0.5 bg-white rounded-full"
             />
           </button>
         </nav>
@@ -125,7 +122,7 @@ async function handleLogout() {
           <template v-if="!isLoggedIn">
             <button
               @click="handlePublicNav('auth')"
-              class="bs-btn-primary text-xs hidden sm:inline-flex"
+              class="hidden sm:inline-flex h-9 items-center rounded-sm bg-white px-4 text-xs font-semibold text-[#0b3a7a] transition-colors hover:bg-sky-50"
             >
               Connexion
             </button>
@@ -134,10 +131,10 @@ async function handleLogout() {
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
                 <button
-                  class="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 hover:bg-accent transition-colors"
+                  class="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 hover:bg-white/10 transition-colors"
                   :title="currentUser.name"
                 >
-                  <span class="hidden sm:inline text-sm font-medium text-foreground max-w-[140px] truncate">
+                  <span class="hidden sm:inline text-sm font-medium text-white max-w-[140px] truncate">
                     {{ currentUser.name }}
                   </span>
                   <Avatar class="w-8 h-8">
@@ -146,7 +143,7 @@ async function handleLogout() {
                       :src="currentUser.avatar"
                       :alt="currentUser.name"
                     />
-                    <AvatarFallback class="bg-primary text-white text-xs font-bold">
+                    <AvatarFallback class="bg-white/20 text-white text-xs font-bold">
                       {{ userInitials }}
                     </AvatarFallback>
                   </Avatar>
@@ -177,7 +174,7 @@ async function handleLogout() {
 
           <button
             @click="mobileMenuOpen = !mobileMenuOpen"
-            class="lg:hidden p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-accent transition-colors"
+            class="lg:hidden p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
           >
             <X v-if="mobileMenuOpen" class="w-5 h-5" />
             <Menu v-else class="w-5 h-5" />
@@ -188,39 +185,39 @@ async function handleLogout() {
 
     <div
       v-if="mobileMenuOpen"
-      class="lg:hidden border-t border-border bg-card px-4 py-4 space-y-2 animate-fadeIn"
+      class="lg:hidden border-t border-white/10 bg-[#0b3a7a] px-4 py-4 space-y-2 animate-fadeIn"
     >
       <button
         v-for="item in navItems"
         :key="item.id"
         @click="handlePublicNav(item.id)"
         class="w-full py-2.5 px-3 rounded-lg text-left text-sm font-medium"
-        :class="isPublicRoute && publicTab === item.id ? 'bg-primary/10 text-primary' : 'hover:bg-accent'"
+        :class="isPublicRoute && publicTab === item.id ? 'bg-white/15 text-white' : 'text-white/80 hover:bg-white/10'"
       >
         {{ item.label }}
       </button>
-      <div class="border-t border-border pt-3 space-y-2">
+      <div class="border-t border-white/10 pt-3 space-y-2">
         <button
           v-if="!isLoggedIn"
           @click="handlePublicNav('auth')"
-          class="w-full bs-btn-primary text-center"
+          class="w-full h-10 rounded-sm bg-white text-center text-sm font-semibold text-[#0b3a7a]"
         >
           Connexion / Inscription
         </button>
         <template v-else>
-          <button @click="goToProfile" class="w-full py-2 rounded-lg text-sm font-medium hover:bg-accent flex items-center justify-center gap-2">
+          <button @click="goToProfile" class="w-full py-2 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10 flex items-center justify-center gap-2">
             <User class="w-4 h-4" /> Mon profil
           </button>
           <button
             v-if="canAccessAdmin"
             @click="goToAdmin(); mobileMenuOpen = false"
-            class="w-full py-2 rounded-lg text-sm font-medium hover:bg-accent flex items-center justify-center gap-2"
+            class="w-full py-2 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10 flex items-center justify-center gap-2"
           >
             <LayoutDashboard class="w-4 h-4" /> Espace Admin
           </button>
           <button
             @click="handleLogout"
-            class="w-full bs-btn-primary text-center"
+            class="w-full h-10 rounded-sm bg-white text-center text-sm font-semibold text-[#0b3a7a]"
           >
             Déconnexion
           </button>

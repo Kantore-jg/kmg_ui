@@ -24,6 +24,8 @@ export function mapMarket(m) {
     description: m.description || '',
     totalPlaces: m.places_count ?? m.total_places ?? 0,
     occupiedPlaces: m.occupied_places ?? 0,
+    availablePlaces: m.available_places
+      ?? Math.max(0, (m.places_count ?? m.total_places ?? 0) - (m.occupied_places ?? 0)),
     image: resolveStorageUrl(m.image),
     coverImage: resolveStorageUrl(m.cover_image || m.image),
     administrativeLocation,
