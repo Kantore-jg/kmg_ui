@@ -1,1 +1,0 @@
-import{It as e,Pt as t,R as n,_t as r,it as i,st as a}from"./index-B0BVD_8u.js";import{f as o,r as s}from"./Button-gEM2SNBx.js";var c={__name:`DialogDescription`,props:{class:{type:String,default:``}},setup(c){let l=c;return(c,u)=>(i(),n(t(o),{class:e(t(s)(`text-muted-foreground text-sm`,l.class))},{default:r(()=>[a(c.$slots,`default`)]),_:3},8,[`class`]))}};export{c as t};

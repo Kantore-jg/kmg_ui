@@ -1,1 +1,0 @@
-import{n as e}from"./index-B0BVD_8u.js";function t(){let t=e(),n=(e,n={})=>{let r=Object.fromEntries(Object.entries(n).filter(([,e])=>e!=null&&e!==``));t.push({path:`/admin/print/${e}`,query:r})};return{openPrint:n,openMerchantsPrint:e=>n(`merchants`,{market:e}),openPlacesPrint:e=>n(`places`,{market:e})}}export{t};
